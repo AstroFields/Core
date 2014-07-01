@@ -1,0 +1,19 @@
+{
+    "name" : "wcm/astrofields",
+    "description" : "A WordPress bundle to add fields and a bunch of other things",
+    "license" : "MIT",
+    "authors" : [
+        {
+            "name"  : "Kaiser Franz Josef",
+            "email" : "wecodemore@gmail.com"
+        }
+    ],
+    "minimum-stability" : "stable",
+    "require" : {},
+    "autoload" : {
+        "psr-4" : {
+            "WCM\\AstroFields\\Core\\"     : "src\\Core\\",
+            "WCM\\AstroFields\\PostMeta\\" : "src\\PostMeta\\"
+        }
+    }
+}
