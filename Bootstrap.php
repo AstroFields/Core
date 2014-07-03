@@ -15,6 +15,7 @@ use WCM\AstroFields\Core\Templates\InputField as InputFieldTmpl;
 use WCM\AstroFields\Security\Observers\SanitizeString;
 
 use WCM\AstroFields\PostMeta\Observers\InputField;
+use WCM\AstroFields\PostMeta\Observers\SaveMeta;
 use WCM\AstroFields\PostMeta\Receivers\PostMetaValue;
 
 // Drop in Composer autoloader
@@ -35,6 +36,7 @@ add_action( 'wp_loaded', function()
 		->setTemplate( new InputFieldTmpl );
 
 	$sanitizeString = new SanitizeString;
+	$saveMeta = new SaveMeta;
 
 	// Entity: Field
 	$field = new Field( 'wcm_test', array(
@@ -44,6 +46,7 @@ add_action( 'wp_loaded', function()
 	// Attach Commands
 	$field
 		->attach( $inputFieldView )
+		->attach( $saveMeta )
 		->attach( $sanitizeString );
 
 	// MetaBox

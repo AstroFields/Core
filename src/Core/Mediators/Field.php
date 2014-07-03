@@ -49,6 +49,7 @@ class Field implements \SplSubject
 				$data
 			) );
 
+			# @TODO Rethink if we can somehow still add the Command to the \SplObjectstorage
 			$this->dispatch( $command, $data );
 
 			return $this;
@@ -98,6 +99,7 @@ class Field implements \SplSubject
 	public function detach( \SplObserver $command )
 	{
 		$this->commands->detach( $command );
+
 		# @TODO Remove from filter callback stack
 		# foreach ( $command->getContext() as $c )
 		# remove_filter( $c, array( $command, 'update' ) );
