@@ -8,13 +8,14 @@ namespace WCM;
  */
 
 use WCM\AstroFields\Core\Mediators\Field;
-use WCM\AstroFields\Core\Commands\InputField as InputFieldCmd;
 use WCM\AstroFields\Core\Mediators\MetaBox;
-use WCM\AstroFields\PostMeta\Observers\InputField;
 
-use WCM\AstroFields\PostMeta\Receivers\PostMetaValue;
-use WCM\AstroFields\Core\Views\InputField as InputFieldView;
 use WCM\AstroFields\Core\Templates\InputField as InputFieldTmpl;
+
+use WCM\AstroFields\Security\Observers\SanitizeString;
+
+use WCM\AstroFields\PostMeta\Observers\InputField;
+use WCM\AstroFields\PostMeta\Receivers\PostMetaValue;
 
 // Drop in Composer autoloader
 require_once plugin_dir_path( __FILE__ )."vendor/autoload.php";
@@ -25,17 +26,30 @@ add_action( 'wp_loaded', function()
 	if ( ! is_admin() )
 		return;
 
-	$inputField = new InputField;
-	$inputField
+	// Commands
+	$inputFieldView = new InputField;
+	$inputFieldView
+		->setContext( '' )
 #		->setContext( 'edit_form_advanced' )
 		->setProvider( new PostMetaValue )
 		->setTemplate( new InputFieldTmpl );
 
+	$sanitizeString = new SanitizeString;
+
+	// Entity: Field
 	$field = new Field( 'wcm_test', array(
 		'post',
+		'page',
 	) );
-	$field->attach( $inputField );
+	// Attach Commands
+	$field
+		->attach( $inputFieldView )
+		->attach( $sanitizeString );
 
-	$metabox = new MetaBox( 'wcm_meta_box', 'WCM Meta Box' );
-	$metabox->attach( $field );
+	// MetaBox
+	$meta_box = new MetaBox( 'wcm_meta_box', 'WCM Meta Box', array(
+		'post',
+	) );
+	// Attach Entities
+	$meta_box->attach( $field );
 } );

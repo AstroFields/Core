@@ -12,8 +12,7 @@
     "require" : {},
     "autoload" : {
         "psr-4" : {
-            "WCM\\AstroFields\\Core\\"     : "src\\Core\\",
-            "WCM\\AstroFields\\PostMeta\\" : "src\\PostMeta\\"
+            "WCM\\AstroFields\\" : "src\\"
         }
     }
 }

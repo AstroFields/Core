@@ -2,36 +2,42 @@
 
 namespace WCM\AstroFields\Core\Mediators;
 
-use WCM\AstroFields\Core\Observers\ViewAwareInterface;
-use WCM\AstroFields\Core\Filters\ViewableFilterIterator;
-
-class MetaBox # implements \SplSubject
+class MetaBox
 {
-	/** @var string */
+	/** @type string */
 	private $key;
 
-	/** @var string */
+	/** @type string */
 	private $label;
 
-	/** @var string */
+	/** @type Array */
+	private $types;
+
+	/** @type string */
 	private $context = 'advanced';
 
-	/** @var string */
+	/** @type string */
 	private $priority = 'default';
 
-	/** @var \SplObjectstorage */
-	private $observers;
+	/** @type \SplPriorityQueue */
+	private $entities;
 
-	public function __construct( $key, $label )
+	public function __construct( $key, $label, Array $types )
 	{
 		$this->key   = $key;
 		$this->label = $label;
+		$this->types = $types;
 
-		$this->observers = new \SplObjectstorage;
+		$this->entities = new \SplObjectstorage;
 
 		add_action( 'load-post-new.php', array( $this, 'addMetaBox' ) );
+		add_action( 'load-post.php', array( $this, 'addMetaBox' ) );
 	}
 
+	/**
+	 * @param int $context
+	 * @return $this
+	 */
 	public function setContext( $context )
 	{
 		$this->context = $context;
@@ -39,6 +45,10 @@ class MetaBox # implements \SplSubject
 		return $this;
 	}
 
+	/**
+	 * @param int $priority
+	 * @return $this
+	 */
 	public function setPriority( $priority )
 	{
 		$this->priority = $priority;
@@ -54,44 +64,33 @@ class MetaBox # implements \SplSubject
 			array( $this, 'notify' ),
 			null,
 			$this->context,
-			$this->priority,
-			$this->getObservers()
+			$this->priority
 		);
 	}
 
 	/**
-	 * Attach a \SplObserver
-	 * @param \SplObserver $observer
+	 * Attach a \SplSubject
+	 * @param \SplSubject $command
+	 * @param int|null     $priority
 	 * @return $this|void
 	 */
-	public function attach( $observer )
+	public function attach( \SplSubject $command, $priority = null )
 	{
-		$this->observers->attach( $observer );
+		$this->entities->attach( $command );
 
 		return $this;
 	}
 
 	/**
-	 * Detach a \SplObserver
-	 * @param \SplObserver $observer
+	 * Detach a \SplSubject
+	 * @param \SplSubject $command
 	 * @return $this|void
 	 */
-	public function detach( \SplObserver $observer )
+	public function detach( \SplSubject $command )
 	{
-		$this->observers->detach( $observer );
+		$this->entities->detach( $command );
 
 		return $this;
-	}
-
-	/**
-	 * @return \ArrayObject
-	 */
-	public function getObservers()
-	{
-		$observers = clone $this->observers;
-		$observers->rewind();
-
-		return $observers;
 	}
 
 	/**
@@ -101,26 +100,9 @@ class MetaBox # implements \SplSubject
 	 */
 	public function notify( \WP_Post $post, Array $data )
 	{
-		/** @type $fields \SplObjectstorage */
-		/** @type $commands \SplObjectstorage */
-		# $fields = $this->getObservers();
-		$fields = $data['args'];
-		foreach ( $fields as $o )
+		foreach ( $this->entities as $entity )
 		{
-			$commands = $fields
-				->current()
-				->getCommands();
-			$commands = new ViewableFilterIterator( $commands );
-
-			foreach ( $commands as $command )
-			{
-				$commands
-					->current()
-					->update(
-						$fields->current(),
-						$commands->getInfo()
-					);
-			}
+			$this->entities->current()->notify();
 		}
 	}
 }
