@@ -7,7 +7,7 @@ use WCM\AstroFields\Core\Views\DataAwareInterface;
 use WCM\AstroFields\Core\Receivers\FieldInterface;
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 
-class InputField implements DataAwareInterface, ViewableInterface
+class Field implements DataAwareInterface, ViewableInterface
 {
 	/** @type Array */
 	private $data;

@@ -2,7 +2,7 @@
 
 namespace WCM\AstroFields\Core\Mediators;
 
-use WCM\AstroFields\Core\Observers\ContextAwareInterface;
+use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 
 class Field implements \SplSubject
 {
@@ -145,12 +145,12 @@ class Field implements \SplSubject
 
 		foreach ( $contexts as $context )
 		{
-			add_filter( $context, function() use ( $command, $data )
+			add_filter( $context, function() use ( $command, $data, $context )
 			{
 				// Provide all filter arguments to the Command
 				$data['args'] = func_get_args();
 
-				$command->update(
+				return $command->update(
 					$this,
 					$data
 				);

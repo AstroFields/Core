@@ -1,6 +1,6 @@
 <?php
 
-namespace WCM\AstroFields\Core\Observers;
+namespace WCM\AstroFields\Core\Commands;
 
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 use WCM\AstroFields\Core\Receivers\DataProviderInterface;

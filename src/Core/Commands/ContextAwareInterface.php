@@ -1,6 +1,6 @@
 <?php
 
-namespace WCM\AstroFields\Core\Observers;
+namespace WCM\AstroFields\Core\Commands;
 
 interface ContextAwareInterface
 {

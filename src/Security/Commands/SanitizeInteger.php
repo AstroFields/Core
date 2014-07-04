@@ -1,10 +1,10 @@
 <?php
 
-namespace WCM\AstroFields\Security\Observers;
+namespace WCM\AstroFields\Security\Commands;
 
-use WCM\AstroFields\Core\Observers\ContextAwareInterface;
+use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 
-class SanitizeString implements \SplObserver, ContextAwareInterface
+class SanitizeInteger implements \SplObserver, ContextAwareInterface
 {
 	/** @type string */
 	private $context = 'sanitize_{type}_meta_{key}';
@@ -12,13 +12,15 @@ class SanitizeString implements \SplObserver, ContextAwareInterface
 	/**
 	 * @param \SplSubject $subject
 	 * @param array       $data
+	 * @return array|string|null
 	 */
 	public function update( \SplSubject $subject, Array $data = null )
 	{
-var_dump( func_get_args() );exit;
-		/*return is_array( $value )
+		$value = $data['args'][0];
+
+		return is_array( $value )
 			? array_map( array( $this, 'sanitize' ), $value )
-			: $this->sanitize( $value );*/
+			: $this->sanitize( $value );
 	}
 
 	/**
@@ -30,7 +32,7 @@ var_dump( func_get_args() );exit;
 	{
 		return filter_var(
 			$value,
-			FILTER_VALIDATE_URL,
+			FILTER_VALIDATE_INT,
 			array( 'flags' => FILTER_NULL_ON_FAILURE )
 		);
 	}

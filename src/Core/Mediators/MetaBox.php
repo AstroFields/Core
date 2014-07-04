@@ -2,6 +2,10 @@
 
 namespace WCM\AstroFields\Core\Mediators;
 
+/**
+ * Class MetaBox
+ * @package WCM\AstroFields\Core\Mediators
+ */
 class MetaBox
 {
 	/** @type string */
@@ -22,6 +26,11 @@ class MetaBox
 	/** @type \SplPriorityQueue */
 	private $entities;
 
+	/**
+	 * @param string $key
+	 * @param string $label
+	 * @param array $types
+	 */
 	public function __construct( $key, $label, Array $types )
 	{
 		$this->key   = $key;
@@ -35,6 +44,7 @@ class MetaBox
 	}
 
 	/**
+	 * Set the `context` argument for `add_meta_box()`
 	 * @param int $context
 	 * @return $this
 	 */
@@ -46,6 +56,7 @@ class MetaBox
 	}
 
 	/**
+	 * Set the `priority` argument for `add_meta_box()`
 	 * @param int $priority
 	 * @return $this
 	 */
@@ -56,6 +67,9 @@ class MetaBox
 		return $this;
 	}
 
+	/**
+	 * Callback to add the meta box
+	 */
 	public function addMetaBox()
 	{
 		add_meta_box(

@@ -1,24 +1,24 @@
 <?php
 
-namespace WCM\AstroFields\PostMeta\Observers;
+namespace WCM\AstroFields\Core\Commands;
 
-use WCM\AstroFields\Core\Observers\ViewAwareInterface;
-use WCM\AstroFields\Core\Observers\ContextAwareInterface;
+use WCM\AstroFields\Core\Commands\ViewAwareInterface;
+use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 
 use WCM\AstroFields\Core\Receivers\DataProviderInterface;
 use WCM\AstroFields\Core\Receivers\FieldInterface;
 
 use WCM\AstroFields\Core\Views\ViewableInterface;
 use WCM\AstroFields\Core\Views\DataAwareInterface;
-use WCM\AstroFields\Core\Views\InputField as View;
+use WCM\AstroFields\Core\Views\Field as View;
 
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 
 
-class InputField implements \SplObserver, ViewAwareInterface, ContextAwareInterface
+class FieldCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
 {
 	/** @var string */
-	private $context = 'edit_form_advanced';
+	protected $context = '';
 
 	/** @type ViewableInterface|DataAwareInterface */
 	private $view;
