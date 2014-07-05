@@ -8,9 +8,10 @@ namespace WCM;
  */
 
 use WCM\AstroFields\Core\Mediators\Entity;
-use WCM\AstroFields\Core\Mediators\MetaBox;
 
-use WCM\AstroFields\Core\Commands\FieldCmd;
+use WCM\AstroFields\MetaBox\Mediators\MetaBox;
+
+use WCM\AstroFields\Core\Commands\ViewCmd;
 
 use WCM\AstroFields\Standards\Templates\InputFieldTmpl;
 use WCM\AstroFields\Standards\Templates\PasswordFieldTmpl;
@@ -37,7 +38,7 @@ add_action( 'wp_loaded', function()
 		return;
 
 	// Commands
-	$mail_view = new FieldCmd;
+	$mail_view = new ViewCmd;
 	$mail_view
 		->setProvider( new PostMetaValue )
 		->setTemplate( new EmailFieldTmpl );
@@ -60,7 +61,7 @@ add_action( 'wp_loaded', function()
 		->attach( new SanitizeMail );
 
 	// Commands
-	$select_view = new FieldCmd;
+	$select_view = new ViewCmd;
 	$select_view
 		->setProvider( new PostMetaValue )
 		->setTemplate( new SelectFieldTmpl );

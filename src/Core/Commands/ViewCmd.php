@@ -15,7 +15,7 @@ use WCM\AstroFields\Core\Views\Field as View;
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 
 
-class FieldCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
+class ViewCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
 {
 	/** @var string */
 	protected $context = '';
