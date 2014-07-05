@@ -1,6 +1,6 @@
 <?php
 
-namespace WCM\AstroFields\Core\Mediators;
+namespace WCM\AstroFields\MetaBox\Mediators;
 
 /**
  * Class MetaBox
