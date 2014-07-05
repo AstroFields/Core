@@ -50,6 +50,7 @@ class Entity implements \SplSubject
 			) );
 
 			# @TODO Rethink if we can somehow still add the Command to the \SplObjectstorage
+			# without running into the problem that we would manually trigger it a second time.
 			$this->dispatch( $command, $data );
 
 			return $this;

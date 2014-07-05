@@ -89,6 +89,35 @@ add_action( 'wp_loaded', function()
 		->attach( new SaveMeta )
 		->attach( new SanitizeString );
 
+	// Commands
+	$textarea_view = new ViewCmd;
+	$textarea_view
+		->setProvider( new PostMetaValue )
+		->setTemplate( new SelectFieldTmpl );
+
+	// Entity: Field
+	$textarea_field = new Entity( 'wcm_select', array(
+		'post',
+	) );
+	// Attach Commands
+	$textarea_field
+		->attach( $textarea_view, array(
+			'attributes' => array(
+				'size'     => 40,
+				'class'    => 'foo bar baz',
+			),
+			'options' => array(
+				''        => '-- select --',
+				'bar'     => 'Bar',
+				'foo'     => 'Foo',
+				'baz'     => 'Baz',
+				'dragons' => 'Dragons',
+			),
+		) )
+		->attach( new DeleteMeta )
+		->attach( new SaveMeta )
+		->attach( new SanitizeString );
+
 	// MetaBox
 	$meta_box = new MetaBox( 'wcm_meta_box', 'WCM Meta Box', array(
 		'post',
@@ -97,5 +126,6 @@ add_action( 'wp_loaded', function()
 	// Attach Entities
 	$meta_box
 		->attach( $select_field, 2 )
+		->attach( $textarea_field, 8 )
 		->attach( $mail_field, 5 );
 } );

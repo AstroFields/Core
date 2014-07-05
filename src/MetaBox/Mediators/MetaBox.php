@@ -120,11 +120,11 @@ class MetaBox
 	 */
 	public function notify( \WP_Post $post, Array $data )
 	{
-		foreach ( $this->entities as $entity )
+		/*foreach ( $this->entities as $entity )
 		{
 			$this->entities
 				->current()
 				->notify();
-		}
+		}*/
 	}
 }
