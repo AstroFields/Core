@@ -4,7 +4,7 @@ namespace WCM\AstroFields\Core\Mediators;
 
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 
-class Field implements \SplSubject
+class Entity implements \SplSubject
 {
 	/** @var string */
 	private $key;

@@ -37,7 +37,9 @@ class MetaBox
 		$this->label = $label;
 		$this->types = $types;
 
-		$this->entities = new \SplObjectstorage;
+		#$this->entities = new \SplObjectstorage;
+		$this->entities = new \SplPriorityQueue;
+		$this->entities->setExtractFlags( \SplPriorityQueue::EXTR_DATA );
 
 		add_action( 'load-post-new.php', array( $this, 'addMetaBox' ) );
 		add_action( 'load-post.php', array( $this, 'addMetaBox' ) );
@@ -72,25 +74,27 @@ class MetaBox
 	 */
 	public function addMetaBox()
 	{
-		add_meta_box(
-			$this->key,
-			$this->label,
-			array( $this, 'notify' ),
-			null,
-			$this->context,
-			$this->priority
-		);
+		foreach ( $this->types as $type )
+			add_meta_box(
+				$this->key,
+				$this->label,
+				array( $this, 'notify' ),
+				$type,
+				$this->context,
+				$this->priority
+			);
 	}
 
 	/**
 	 * Attach a \SplSubject
 	 * @param \SplSubject $command
-	 * @param int|null     $priority
+	 * @param int         $priority
 	 * @return $this|void
 	 */
-	public function attach( \SplSubject $command, $priority = null )
+	public function attach( \SplSubject $command, $priority = 0 )
 	{
-		$this->entities->attach( $command );
+		$this->entities->insert( $command, $priority );
+		#$this->entities->attach( $command );
 
 		return $this;
 	}
@@ -102,7 +106,8 @@ class MetaBox
 	 */
 	public function detach( \SplSubject $command )
 	{
-		$this->entities->detach( $command );
+		#$this->entities->
+		#$this->entities->detach( $command );
 
 		return $this;
 	}

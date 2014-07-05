@@ -6,7 +6,10 @@ use WCM\AstroFields\Core\Receivers\FieldInterface;
 use WCM\AstroFields\Core\Receivers\AttributeAwareInterface;
 use WCM\AstroFields\Core\Receivers\OptionAwareInterface;
 
-class PostMetaValue implements FieldInterface, AttributeAwareInterface, OptionAwareInterface
+class PostMetaValue
+	implements FieldInterface,
+			   AttributeAwareInterface,
+			   OptionAwareInterface
 {
 	/** @type Array */
 	private $data;

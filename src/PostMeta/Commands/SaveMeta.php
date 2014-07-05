@@ -4,7 +4,9 @@ namespace WCM\AstroFields\PostMeta\Commands;
 
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 
-class SaveMeta implements \SplObserver, ContextAwareInterface
+class SaveMeta
+	implements \SplObserver,
+			   ContextAwareInterface
 {
 	/** @type string */
 	private $context = 'save_post_{type}';
@@ -36,6 +38,7 @@ class SaveMeta implements \SplObserver, ContextAwareInterface
 
 		$updated = $this->save();
 		$notice  = $this->check( $updated );
+		# @TODO Do something with the notice
 	}
 
 	public function setContext( $context )
