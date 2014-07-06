@@ -19,7 +19,7 @@ class InputFieldTmpl
 	 */
 	public function display()
 	{
-		$html = <<<EOF
+		return <<<EOF
 <table class="form-table">
 	<tbody>
 		<tr>
@@ -31,7 +31,5 @@ class InputFieldTmpl
 	</tbody>
 </table>
 EOF;
-
-		return $html;
 	}
 }
