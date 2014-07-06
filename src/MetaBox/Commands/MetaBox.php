@@ -3,14 +3,17 @@
 namespace WCM\AstroFields\MetaBox\Commands;
 
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
+use WCM\AstroFields\Core\Templates\TemplateInterface;
+use WCM\AstroFields\Core\Views\ViewableInterface;
+use WCM\AstroFields\Core\Views\DataAwareInterface;
 
-class MetaBox implements \SplObserver, ContextAwareInterface
+use WCM\AstroFields\MetaBox\Commands\ViewAwareInterface;
+use WCM\AstroFields\MetaBox\Views\MetaBoxView as View;
+
+class MetaBox implements \SplObserver, ContextAwareInterface, ViewAwareInterface
 {
 	/** @type string */
 	private $context = 'add_meta_boxes_{type}';
-
-	/** @type \SplPriorityQueue */
-	private $entities;
 
 	/** @type string */
 	private $key;
@@ -27,14 +30,25 @@ class MetaBox implements \SplObserver, ContextAwareInterface
 	/** @type string */
 	private $priority;
 
+	/** @type ViewableInterface|DataAwareInterface */
+	private $view;
+
+	/** @type \SplPriorityQueue */
+	private $receiver;
+
+	/** @type TemplateInterface */
+	private $template;
+
 	public function __construct( $label, $context = 'advanced', $priority = 'default' )
 	{
 		$this->label      = $label;
 		$this->mb_context = $context;
 		$this->priority   = $priority;
 
-		$this->entities = new \SplPriorityQueue;
-		$this->entities->setExtractFlags( \SplPriorityQueue::EXTR_DATA );
+		$this->view = new View;
+
+		$this->receiver = new \SplPriorityQueue;
+		$this->receiver->setExtractFlags( \SplPriorityQueue::EXTR_DATA );
 	}
 
 	/**
@@ -47,6 +61,9 @@ class MetaBox implements \SplObserver, ContextAwareInterface
 		$this->key   = $data['key'];
 		$this->types = $data['type'];
 		# $post        = $data['args'][0];
+
+		$this->view->setData( $this->receiver );
+		$this->view->setTemplate( $this->template );
 
 		$this->addMetaBox();
 	}
@@ -61,7 +78,7 @@ class MetaBox implements \SplObserver, ContextAwareInterface
 			add_meta_box(
 				$this->key,
 				$this->label,
-				array( $this, 'notify' ),
+				array( $this->view, 'process' ),
 				$type,
 				$this->mb_context,
 				$this->priority
@@ -77,19 +94,9 @@ class MetaBox implements \SplObserver, ContextAwareInterface
 	 */
 	public function attach( \SplSubject $command, $priority = 0 )
 	{
-		$this->entities->insert( $command, $priority );
+		$this->receiver->insert( $command, $priority );
 
 		return $this;
-	}
-
-	public function notify( \WP_Post $post, Array $data )
-	{
-		foreach ( $this->entities as $entity )
-		{
-			$this->entities
-				->current()
-				->notify();
-		}
 	}
 
 	public function setContext( $context )
@@ -102,5 +109,19 @@ class MetaBox implements \SplObserver, ContextAwareInterface
 	public function getContext()
 	{
 		return $this->context;
+	}
+
+	public function setProvider( \SplPriorityQueue $receiver )
+	{
+		$this->receiver = $receiver;
+
+		return $this;
+	}
+
+	public function setTemplate( TemplateInterface $template )
+	{
+		$this->template = $template;
+
+		return $template;
 	}
 }

@@ -5,7 +5,6 @@ namespace WCM\AstroFields\MetaBox\Views;
 use WCM\AstroFields\Core\Views\ViewableInterface;
 use WCM\AstroFields\Core\Views\DataAwareInterface;
 use WCM\AstroFields\Core\Templates\TemplateInterface;
-use WCM\AstroFields\MetaBox\Receivers\MetaBox;
 
 class MetaBoxView implements ViewableInterface
 {
@@ -29,10 +28,10 @@ class MetaBoxView implements ViewableInterface
 		return $this;
 	}
 
-	public function process()
+	public function process( \WP_Post $post = NULL, Array $data = array() )
 	{
 		$this->template->attach( $this->data );
 
-		echo $this->template;
+		$this->template->display();
 	}
 }

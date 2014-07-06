@@ -9,7 +9,6 @@ namespace WCM;
 
 use WCM\AstroFields\Core\Mediators\Entity;
 
-use WCM\AstroFields\MetaBox\Mediators\MetaBox;
 use WCM\AstroFields\MetaBox\Commands\ViewCmd as MetaBoxViewCmd;
 use WCM\AstroFields\MetaBox\Commands\MetaBox as MetaBoxCmd;
 use WCM\AstroFields\MetaBox\Receivers\MetaBox as MetaBoxProvider;
@@ -17,6 +16,7 @@ use WCM\AstroFields\MetaBox\Templates\Table;
 
 use WCM\AstroFields\Core\Commands\ViewCmd;
 
+use WCM\AstroFields\MetaBox\Views\MetaBoxView;
 use WCM\AstroFields\Standards\Templates\InputFieldTmpl;
 use WCM\AstroFields\Standards\Templates\PasswordFieldTmpl;
 use WCM\AstroFields\Standards\Templates\RadioFieldTmpl;
@@ -122,7 +122,9 @@ add_action( 'wp_loaded', function()
 	$meta_box_cmd
 		->attach( $select_field, 2 )
 		->attach( $textarea_field, 8 )
-		->attach( $mail_field, 5 );
+		->attach( $mail_field, 5 )
+		->setTemplate( new Table );
+	// Entity: MetaBox
 	$meta_box = new Entity( 'wcm_meta_box', array(
 		'post',
 		'page',
