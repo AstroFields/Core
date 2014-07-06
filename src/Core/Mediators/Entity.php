@@ -34,6 +34,7 @@ class Entity implements \SplSubject
 	 */
 	public function attach( \SplObserver $command, Array $info = array() )
 	{
+		# @TODO Fix `type` vs. `types` to the latter here and in all dependencies.
 		$data = $info + array(
 			'key'  => $this->key,
 			'type' => $this->types,

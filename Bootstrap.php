@@ -10,6 +10,10 @@ namespace WCM;
 use WCM\AstroFields\Core\Mediators\Entity;
 
 use WCM\AstroFields\MetaBox\Mediators\MetaBox;
+use WCM\AstroFields\MetaBox\Commands\ViewCmd as MetaBoxViewCmd;
+use WCM\AstroFields\MetaBox\Commands\MetaBox as MetaBoxCmd;
+use WCM\AstroFields\MetaBox\Receivers\MetaBox as MetaBoxProvider;
+use WCM\AstroFields\MetaBox\Templates\Table;
 
 use WCM\AstroFields\Core\Commands\ViewCmd;
 
@@ -27,6 +31,7 @@ use WCM\AstroFields\Security\Commands\SanitizeMail;
 use WCM\AstroFields\PostMeta\Commands\SaveMeta;
 use WCM\AstroFields\PostMeta\Commands\DeleteMeta;
 use WCM\AstroFields\PostMeta\Receivers\PostMetaValue;
+use WCM\AstroFields\Standards\Templates\TextareaFieldTmpl;
 
 // Drop in Composer autoloader
 require_once plugin_dir_path( __FILE__ )."vendor/autoload.php";
@@ -93,39 +98,34 @@ add_action( 'wp_loaded', function()
 	$textarea_view = new ViewCmd;
 	$textarea_view
 		->setProvider( new PostMetaValue )
-		->setTemplate( new SelectFieldTmpl );
+		->setTemplate( new TextareaFieldTmpl );
 
 	// Entity: Field
-	$textarea_field = new Entity( 'wcm_select', array(
+	$textarea_field = new Entity( 'wcm_textarea', array(
 		'post',
 	) );
 	// Attach Commands
 	$textarea_field
 		->attach( $textarea_view, array(
 			'attributes' => array(
-				'size'     => 40,
-				'class'    => 'foo bar baz',
-			),
-			'options' => array(
-				''        => '-- select --',
-				'bar'     => 'Bar',
-				'foo'     => 'Foo',
-				'baz'     => 'Baz',
-				'dragons' => 'Dragons',
+				'class' => 'attachmentlinks',
+				'rows'  => 5,
+				'cols'  => 40,
 			),
 		) )
 		->attach( new DeleteMeta )
 		->attach( new SaveMeta )
 		->attach( new SanitizeString );
 
-	// MetaBox
-	$meta_box = new MetaBox( 'wcm_meta_box', 'WCM Meta Box', array(
-		'post',
-		'page',
-	) );
-	// Attach Entities
-	$meta_box
+	// Command
+	$meta_box_cmd = new MetaBoxCmd( 'Test Box' );
+	$meta_box_cmd
 		->attach( $select_field, 2 )
 		->attach( $textarea_field, 8 )
 		->attach( $mail_field, 5 );
+	$meta_box = new Entity( 'wcm_meta_box', array(
+		'post',
+		'page',
+	) );
+	$meta_box->attach( $meta_box_cmd );
 } );

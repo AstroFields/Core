@@ -3,23 +3,19 @@
 namespace WCM\AstroFields\MetaBox\Commands;
 
 use WCM\AstroFields\Core\Commands\ViewAwareInterface;
-use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 
 use WCM\AstroFields\Core\Receivers\DataProviderInterface;
 use WCM\AstroFields\Core\Receivers\FieldInterface;
 
 use WCM\AstroFields\Core\Views\ViewableInterface;
 use WCM\AstroFields\Core\Views\DataAwareInterface;
-use WCM\AstroFields\Core\Views\Field as View;
+use WCM\AstroFields\MetaBox\Views\MetaBoxView as View;
 
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 
 
-class ViewCmd implements ViewAwareInterface, ContextAwareInterface
+class ViewCmd implements ViewAwareInterface
 {
-	/** @var string */
-	protected $context = '';
-
 	/** @type ViewableInterface|DataAwareInterface */
 	private $view;
 
@@ -60,17 +56,5 @@ class ViewCmd implements ViewAwareInterface, ContextAwareInterface
 		$this->template = $template;
 
 		return $this;
-	}
-
-	public function setContext( $context )
-	{
-		$this->context = $context;
-
-		return $this;
-	}
-
-	public function getContext()
-	{
-		return $this->context;
 	}
 }

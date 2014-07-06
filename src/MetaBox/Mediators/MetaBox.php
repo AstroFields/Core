@@ -2,6 +2,10 @@
 
 namespace WCM\AstroFields\MetaBox\Mediators;
 
+use WCM\AstroFields\Core\Commands\ViewAwareInterface;
+use WCM\AstroFields\Core\Receivers\DataProviderInterface;
+use WCM\AstroFields\Core\Templates\TemplateInterface;
+
 /**
  * Class MetaBox
  * @package WCM\AstroFields\Core\Mediators
@@ -25,6 +29,9 @@ class MetaBox
 
 	/** @type \SplPriorityQueue */
 	private $entities;
+
+	/** @type ViewAwareInterface */
+	private $command;
 
 	/**
 	 * @param string $key
@@ -113,6 +120,19 @@ class MetaBox
 		return $this;
 	}
 
+	public function setCommand(
+		ViewAwareInterface $command,
+		DataProviderInterface $receiver,
+		TemplateInterface $template
+		)
+	{
+		$this->command = $command;
+		$this->command->setProvider( $receiver );
+		$this->command->setTemplate( $template );
+
+		return $this;
+	}
+
 	/**
 	 * Render the MetaBox contents
 	 * @param \WP_Post $post
@@ -120,6 +140,12 @@ class MetaBox
 	 */
 	public function notify( \WP_Post $post, Array $data )
 	{
+		$this->command->update( array(
+			'post'     => $post,
+			'args'     => $data,
+			'entities' => $this->entities,
+		) );
+
 		/*foreach ( $this->entities as $entity )
 		{
 			$this->entities
