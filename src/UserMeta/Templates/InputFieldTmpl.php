@@ -19,16 +19,18 @@ class InputFieldTmpl
 	 */
 	public function display()
 	{
-		$html  = '<table class="form-table"><tbody><tr>';
-		$html .= sprintf(
-			'<th scope="row"><label for="%s">Foo</label></th>',
-			$this->data->getKey()
-		);
-		$html .= sprintf(
-			'<td>%s</td>',
-			parent::getMarkUp()
-		);
-		$html .= '</tr></tbody></table>';
+		$html = <<<EOF
+<table class="form-table">
+	<tbody>
+		<tr>
+			<th scope="row">
+				<label for="{$this->data->getKey()}">Foo</label>
+			/th>
+			<td>{$this->getMarkUp()}</td>
+		</tr>
+	</tbody>
+</table>
+EOF;
 
 		return $html;
 	}
