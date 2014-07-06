@@ -9,15 +9,16 @@ use WCM\Meta\Commands\MetaBoxInterface;
 class Table implements TemplateInterface
 {
 	/** @type \SplPriorityQueue */
-	private $data;
+	private $entities;
 
 	/**
-	 * @param \SplPriorityQueue $data
+	 * Attach the entities
+	 * @param \SplPriorityQueue $entities
 	 * @return $this
 	 */
-	public function attach( $data )
+	public function attach( $entities )
 	{
-		$this->data = $data;
+		$this->entities = $entities;
 
 		return $this;
 	}
@@ -28,9 +29,19 @@ class Table implements TemplateInterface
 	 */
 	public function display()
 	{
-		foreach ( $this->data as $entity )
+		echo '<table class="wp-list-table  widefat"><tbody>';
+		foreach ( $this->entities as $entity )
 		{
-			$this->data->current()->notify();
+			$class = 0 === $this->entities->key() %2 ? ' class="alternate"' : '';
+			echo "<tr{$class}>";
+				echo '<td>Foo</td>';
+				echo '<td>';
+					$this->entities
+						->current()
+						->notify();
+				echo '</td>';
+			echo '</tr>';
 		}
+		echo '</tbody></table>';
 	}
 }

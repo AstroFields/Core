@@ -9,7 +9,6 @@ namespace WCM;
 
 use WCM\AstroFields\Core\Mediators\Entity;
 
-use WCM\AstroFields\MetaBox\Commands\ViewCmd as MetaBoxViewCmd;
 use WCM\AstroFields\MetaBox\Commands\MetaBox as MetaBoxCmd;
 use WCM\AstroFields\MetaBox\Receivers\MetaBox as MetaBoxProvider;
 use WCM\AstroFields\MetaBox\Templates\Table;
@@ -25,6 +24,8 @@ use WCM\AstroFields\Standards\Templates\CheckboxListTmpl;
 use WCM\AstroFields\Standards\Templates\CheckboxFieldTmpl;
 use WCM\AstroFields\HTML5\Templates\EmailFieldTmpl;
 
+use WCM\AstroFields\UserMeta\Templates\InputFieldTmpl as InputFieldTmplUser;
+
 use WCM\AstroFields\Security\Commands\SanitizeString;
 use WCM\AstroFields\Security\Commands\SanitizeMail;
 
@@ -32,6 +33,11 @@ use WCM\AstroFields\PostMeta\Commands\SaveMeta;
 use WCM\AstroFields\PostMeta\Commands\DeleteMeta;
 use WCM\AstroFields\PostMeta\Receivers\PostMetaValue;
 use WCM\AstroFields\Standards\Templates\TextareaFieldTmpl;
+
+use WCM\AstroFields\UserMeta\Commands\SaveMeta as SaveUserMeta;
+use WCM\AstroFields\UserMeta\Commands\DeleteMeta as DeleteUserMeta;
+use WCM\AstroFields\UserMeta\Receivers\UserMetaValue;
+
 
 // Drop in Composer autoloader
 require_once plugin_dir_path( __FILE__ )."vendor/autoload.php";
@@ -130,4 +136,32 @@ add_action( 'wp_loaded', function()
 		'page',
 	) );
 	$meta_box->attach( $meta_box_cmd );
+} );
+
+add_action( 'wp_loaded', function()
+{
+	if ( ! is_admin() )
+		return;
+
+	// Commands
+	$input_view = new ViewCmd;
+	$input_view
+		->setContext( 'edit_user_profile' )
+		->setProvider( new UserMetaValue )
+		->setTemplate( new InputFieldTmplUser );
+
+	// Entity: Field
+	$input_field = new Entity( 'wcm_input_user', array(
+		'post',
+	) );
+	// Attach Commands
+	$input_field
+		->attach( $input_view, array(
+			'attributes' => array(
+				'class' => 'regular-text',
+			),
+		) )
+		->attach( new DeleteUserMeta )
+		->attach( new SaveUserMeta )
+		->attach( new SanitizeString );
 } );

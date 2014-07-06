@@ -10,7 +10,7 @@ use WCM\AstroFields\Core\Templates\TemplateInterface,
 class InputFieldTmpl implements TemplateInterface, PrintableInterface
 {
 	/** @type AttributeAwareInterface */
-	private $data;
+	protected $data;
 
 	/**
 	 * @param FieldInterface $data
