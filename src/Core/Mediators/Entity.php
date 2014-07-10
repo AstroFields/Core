@@ -23,6 +23,16 @@ class Entity implements \SplSubject
 		$this->commands  = new \SplObjectstorage;
 	}
 
+	public function getKey()
+	{
+		return $this->key;
+	}
+
+	public function getTypes()
+	{
+		return $this->types;
+	}
+
 	/**
 	 * Attach an SplObserver
 	 * If the context is empty, but ContextAwareInterface implemented,
@@ -42,7 +52,7 @@ class Entity implements \SplSubject
 
 		if (
 			$command instanceof ContextAwareInterface
-			AND ! empty( $command->getContext() )
+			AND '' !== $command->getContext()
 			)
 		{
 			$command->setContext( $this->parseContext(

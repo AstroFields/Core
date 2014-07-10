@@ -2,20 +2,22 @@
 
 namespace WCM\AstroFields\Settings\Commands;
 
+use WCM\AstroFields\Core\Mediators\Entity;
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 use WCM\AstroFields\Core\Views\ViewableInterface;
-use WCM\AstroFields\Core\Views\DataAwareInterface;
+use WCM\AstroFields\Settings\Views\SettingsSection as View;
 
 /**
  * Class SettingsSection
  * @package WCM\AstroFields\MetaBox\Commands
- * Written while waiting in the train on the station of beautiful Treibach-Althofen
+ * Written while waiting in the train on the station of beautiful Treibach-Althofen/Carinthia
  */
 class SettingsSection implements \SplObserver, ContextAwareInterface
 {
 	/** @type string */
-	private $context = 'admin_head-options-{type}.php';
+	private $context = 'load-options-{type}.php';
+	# private $context = 'admin_head-options-{type}.php';
 
 	/** @type string */
 	private $key;
@@ -24,15 +26,9 @@ class SettingsSection implements \SplObserver, ContextAwareInterface
 	private $types;
 
 	/** @type string */
-	private $title = '';
+	private $title;
 
-	/** @type string */
-	private $mb_context;
-
-	/** @type string */
-	private $priority;
-
-	/** @type ViewableInterface|DataAwareInterface */
+	/** @type ViewableInterface */
 	private $view;
 
 	/** @type \SplPriorityQueue */
@@ -41,12 +37,11 @@ class SettingsSection implements \SplObserver, ContextAwareInterface
 	/** @type TemplateInterface */
 	private $template;
 
-	public function __construct( $title, $id )
+	public function __construct( $title = '' )
 	{
 		$this->title = $title;
-		$this->id    = $id;
 
-		# $this->view = new View;
+		$this->view = new View;
 
 		$this->receiver = new \SplPriorityQueue;
 		$this->receiver->setExtractFlags( \SplPriorityQueue::EXTR_DATA );
@@ -61,11 +56,10 @@ class SettingsSection implements \SplObserver, ContextAwareInterface
 	{
 		$this->key   = $data['key'];
 		$this->types = $data['type'];
-		# $post        = $data['args'][0];
 
 		$this->view->setData( $this->receiver );
 		$this->view->setTemplate( $this->template );
-var_dump( $data );
+
 		$this->addSection();
 	}
 
@@ -76,12 +70,19 @@ var_dump( $data );
 	{
 		foreach ( $this->types as $type )
 		{
-var_dump( $type );
+			add_settings_section(
+				$this->key,
+				$this->title,
+				array( $this->view, 'process' ),
+				$type
+			);
 		}
 	}
 
 	/**
 	 * Attach a \SplSubject
+	 * Adds the entitiy name to the whitelist so WP core can
+	 * care about saving the option value(s).
 	 * @param \SplSubject $command
 	 * @param int         $priority
 	 * @return $this|void
@@ -89,6 +90,17 @@ var_dump( $type );
 	public function attach( \SplSubject $command, $priority = 0 )
 	{
 		$this->receiver->insert( $command, $priority );
+
+		add_filter( 'whitelist_options', function( $list ) use ( $command )
+		{
+			/** @type Entity $command */
+			foreach ( $command->getTypes() as $type )
+			{
+				$list[ $type ][] = $command->getKey();
+			}
+
+			return $list;
+		} );
 
 		return $this;
 	}

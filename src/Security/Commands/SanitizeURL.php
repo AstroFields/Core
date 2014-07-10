@@ -7,7 +7,7 @@ use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 class SanitizeURL implements \SplObserver, ContextAwareInterface
 {
 	/** @type string */
-	private $context = 'sanitize_{type}_meta_{key}';
+	protected $context = 'sanitize_{type}_meta_{key}';
 
 	/**
 	 * @param \SplSubject $subject

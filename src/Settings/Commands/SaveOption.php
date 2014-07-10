@@ -9,16 +9,10 @@ class SaveOption
 			   ContextAwareInterface
 {
 	/** @type string */
-	private $context = 'save_post_{type}';
+	private $context = 'pre_set_transient_settings_errors';
 
 	/** @type Array */
 	private $data;
-
-	/** @type int */
-	private $postID;
-
-	/** @type \WP_Post */
-	private $post;
 
 	/**
 	 * @param \SplSubject $subject
@@ -27,8 +21,6 @@ class SaveOption
 	public function update( \SplSubject $subject, Array $data = null )
 	{
 		$this->data   = $data;
-		$this->postID = $data['args'][0];
-		$this->post   = $data['args'][1];
 
 		if (
 			! isset( $_POST[ $data['key'] ] )
@@ -36,8 +28,9 @@ class SaveOption
 		)
 			return;
 
-		$updated = $this->save();
-		$notice  = $this->check( $updated );
+#		$updated = $this->save();
+#exit( var_dump( $updated ) );
+#		$notice  = $this->check( $updated );
 		# @TODO Do something with the notice
 	}
 

@@ -5,7 +5,6 @@ namespace WCM\AstroFields\MetaBox\Commands;
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 use WCM\AstroFields\Core\Views\ViewableInterface;
-use WCM\AstroFields\Core\Views\DataAwareInterface;
 
 use WCM\AstroFields\MetaBox\Commands\ViewAwareInterface;
 use WCM\AstroFields\MetaBox\Views\MetaBoxView as View;
@@ -30,7 +29,7 @@ class MetaBox implements \SplObserver, ContextAwareInterface, ViewAwareInterface
 	/** @type string */
 	private $priority;
 
-	/** @type ViewableInterface|DataAwareInterface */
+	/** @type ViewableInterface */
 	private $view;
 
 	/** @type \SplPriorityQueue */

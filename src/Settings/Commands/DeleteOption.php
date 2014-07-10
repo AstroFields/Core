@@ -9,16 +9,10 @@ class DeleteOption
 			   ContextAwareInterface
 {
 	/** @type string */
-	private $context = 'save_post_{type}';
+	private $context = 'pre_set_transient_settings_errors';
 
 	/** @type Array */
 	private $data;
-
-	/** @type int */
-	private $postID;
-
-	/** @type \WP_Post */
-	private $post;
 
 	/**
 	 * @param \SplSubject $subject
@@ -27,12 +21,12 @@ class DeleteOption
 	public function update( \SplSubject $subject, Array $data = null )
 	{
 		$this->data   = $data;
-		$this->postID = $data['args'][0];
-		$this->post   = $data['args'][1];
 
-		$updated = empty( $_POST[ $data['key'] ] )
-			? $this->delete()
-			: false;
+		if (
+			empty( $_POST[ $data['key'] ] )
+			AND '' === get_option( $data['key'] )
+		)
+			$this->delete();
 	}
 
 	public function setContext( $context )

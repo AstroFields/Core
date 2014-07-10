@@ -1,11 +1,11 @@
 <?php
 
-namespace WCM\AstroFields\MetaBox\Views;
+namespace WCM\AstroFields\Settings\Views;
 
 use WCM\AstroFields\Core\Views\ViewableInterface;
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 
-class MetaBoxView implements ViewableInterface
+class SettingsSection implements ViewableInterface
 {
 	/** @type Array */
 	private $data;
@@ -27,7 +27,7 @@ class MetaBoxView implements ViewableInterface
 		return $this;
 	}
 
-	public function process( \WP_Post $post = NULL, Array $data = array() )
+	public function process()
 	{
 		$this->template->attach( $this->data );
 
