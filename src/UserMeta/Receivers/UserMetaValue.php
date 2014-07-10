@@ -14,6 +14,9 @@ class UserMetaValue
 	/** @type Array */
 	private $data;
 
+	/** @type \WP_User */
+	private $user;
+
 	/**
 	 * Set the data to deliver to the template
 	 * @param array $data
@@ -21,6 +24,7 @@ class UserMetaValue
 	public function setData( Array $data )
 	{
 		$this->data = $data;
+		$this->user = $data['args'][0];
 	}
 
 	/**
@@ -39,7 +43,7 @@ class UserMetaValue
 	public function getValue()
 	{
 		return get_user_meta(
-			$GLOBALS['user_id'],
+			$this->user->ID,
 			$this->data['key'],
 			true
 		);

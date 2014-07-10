@@ -77,11 +77,12 @@ class SettingsSection implements \SplObserver, ContextAwareInterface
 				$type
 			);
 		}
+#var_dump( $GLOBALS['wp_settings_sections'] );
 	}
 
 	/**
 	 * Attach a \SplSubject
-	 * Adds the entitiy name to the whitelist so WP core can
+	 * Adds the entity name to the whitelist so WP core can
 	 * care about saving the option value(s).
 	 * @param \SplSubject $command
 	 * @param int         $priority
@@ -91,16 +92,18 @@ class SettingsSection implements \SplObserver, ContextAwareInterface
 	{
 		$this->receiver->insert( $command, $priority );
 
-		add_filter( 'whitelist_options', function( $list ) use ( $command )
+		/** @type Entity $command */
+		foreach ( $command->getTypes() as $type )
 		{
-			/** @type Entity $command */
-			foreach ( $command->getTypes() as $type )
-			{
-				$list[ $type ][] = $command->getKey();
-			}
-
-			return $list;
-		} );
+			register_setting( $type, $command->getKey() );
+			add_settings_field(
+				$command->getKey(),
+				'Foo',
+				array( $this->view, 'process' ),
+				$type,
+				'default'
+			);
+		}
 
 		return $this;
 	}

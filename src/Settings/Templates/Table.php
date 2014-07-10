@@ -31,9 +31,13 @@ class Table implements TemplateInterface
 		{
 			?>
 			<table class="form-table">
-				<?php
-				$this->entities->current()->notify();
-				?>
+				<tr>
+					<?php
+					$this->entities
+						->current()
+						->notify();
+					?>
+				</tr>
 			</table>
 			<?php
 		}

@@ -148,22 +148,28 @@ class Entity implements \SplSubject
 
 	/**
 	 * Delay the execution of a Command until the appearance of a hook or filter
+	 * $subject = $this Alias:
+	 * PHP 5.3 fix, as Closures don't know where to point $this prior to 5.4
+	 * props Malte "s1lv3r" Witt
+	 * @link https://wiki.php.net/rfc/closures/object-extension
 	 * @param \SplObserver|ContextAwareInterface $command
 	 * @param array                              $data
 	 */
 	public function dispatch( ContextAwareInterface $command, Array $data )
 	{
 		$contexts = $command->getContext();
+		$subject  = $this;
 
 		foreach ( $contexts as $context )
 		{
-			add_filter( $context, function() use ( $command, $data, $context )
+			/** @type $command */
+			add_filter( $context, function() use ( $subject, $command, $data, $context )
 			{
 				// Provide all filter arguments to the Command
 				$data['args'] = func_get_args();
 
 				return $command->update(
-					$this,
+					$subject,
 					$data
 				);
 

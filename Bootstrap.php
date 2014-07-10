@@ -26,12 +26,14 @@ use WCM\AstroFields\PostMeta\Receivers\PostMetaValue;
 use WCM\AstroFields\UserMeta\Commands\SaveMeta as SaveUserMeta;
 use WCM\AstroFields\UserMeta\Commands\DeleteMeta as DeleteUserMeta;
 use WCM\AstroFields\UserMeta\Receivers\UserMetaValue;
+use WCM\AstroFields\UserMeta\Templates\InputFieldTmpl as InputFieldTmplUser;
 
 use WCM\AstroFields\Settings\Commands\SettingsSection as SettingsSectionCmd;
 use WCM\AstroFields\Settings\Commands\DeleteOption;
 use WCM\AstroFields\Settings\Commands\SanitizeString as SanitzeOptionsString;
 use WCM\AstroFields\Settings\Receivers\OptionValue;
 use WCM\AstroFields\Settings\Templates\Table as SettingsTmpl;
+use WCM\AstroFields\Settings\Templates\InputSettingsTmpl;
 
 use WCM\AstroFields\Standards\Templates\InputFieldTmpl;
 use WCM\AstroFields\Standards\Templates\PasswordFieldTmpl;
@@ -41,8 +43,6 @@ use WCM\AstroFields\Standards\Templates\CheckboxListTmpl;
 use WCM\AstroFields\Standards\Templates\CheckboxFieldTmpl;
 use WCM\AstroFields\Standards\Templates\TextareaFieldTmpl;
 use WCM\AstroFields\HTML5\Templates\EmailFieldTmpl;
-
-use WCM\AstroFields\UserMeta\Templates\InputFieldTmpl as InputFieldTmplUser;
 
 
 // Drop in Composer autoloader
@@ -146,8 +146,34 @@ add_action( 'wp_loaded', function()
 } );
 
 
+add_action( 'admin_menu', function()
+{
+	add_menu_page(
+		'Hello Trac',
+		'Trac',
+		'manage_options',
+		'trac',
+		function()
+		{
+			?>
+			<div class="wrap">
+				<h2><?php print $GLOBALS['title']; ?></h2>
+				<?php settings_errors(); ?>
+				<form action="options.php" method="POST">
+					<?php
+					settings_fields( 'trac' );
+					do_settings_sections( 'trac' );
+					submit_button();
+					?>
+				</form>
+			</div>
+			<?php
+		}
+	);
+} );
+
 ### SETTINGS SECTION
-add_action( 'wp_loaded', function()
+add_action( 'admin_init', function()
 {
 	if ( ! is_admin() )
 		return;
@@ -156,23 +182,17 @@ add_action( 'wp_loaded', function()
 	$input_view = new ViewCmd;
 	$input_view
 		->setProvider( new OptionValue )
-		->setTemplate( new InputFieldTmpl );
-	// Alternate way to sanitize, not using the SecuritySettings
-	# $sanitize = new SanitizeString;
-	# $sanitize->setContext( 'sanitize_option_{key}' );
+		->setTemplate( new InputSettingsTmpl );
 
 	// Entity: Field
 	$input_field = new Entity( 'wcm_settings_field', array(
 		'general',
 		'permalink',
+		'trac',
 	) );
-	// Attach Commands
+	// Attach Commands to Field
 	$input_field
-		->attach( $input_view, array(
-			'attributes' => array(
-				'class' => 'regular-text',
-			),
-		) )
+		->attach( $input_view )
 		->attach( new DeleteOption )
 		->attach( new SanitzeOptionsString );
 
@@ -181,6 +201,7 @@ add_action( 'wp_loaded', function()
 	$section_cmd
 		->attach( $input_field, 5 )
 		->setTemplate( new SettingsTmpl );
+
 	// Entity: Settings Section
 	$section = new Entity( 'wcm_settings_section', array(
 		'general',
@@ -199,21 +220,23 @@ add_action( 'wp_loaded', function()
 	// Commands
 	$input_view = new ViewCmd;
 	$input_view
-		->setContext( 'edit_user_profile' )
+		->setContext( '{type}_user_profile' )
 		->setProvider( new UserMetaValue )
 		->setTemplate( new InputFieldTmplUser );
 
 	// Entity: Field
+	# @TODO Update the context parser. This sucks.
 	$input_field = new Entity( 'wcm_input_user', array(
-		'post',
+		'edit',
+		'show',
 	) );
 	// Attach Commands
 	$input_field
 		->attach( $input_view, array(
-				'attributes' => array(
-					'class' => 'regular-text',
-				),
-			) )
+			'attributes' => array(
+				'class' => 'regular-text',
+			),
+		) )
 		->attach( new DeleteUserMeta )
 		->attach( new SaveUserMeta )
 		->attach( new SanitizeString );
