@@ -25,7 +25,7 @@ class InputFieldTmpl
 		<tr>
 			<th scope="row">
 				<label for="{$this->data->getKey()}">Foo</label>
-			/th>
+			</th>
 			<td>{$this->getMarkUp()}</td>
 		</tr>
 	</tbody>

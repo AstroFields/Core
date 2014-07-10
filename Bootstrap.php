@@ -16,6 +16,8 @@ use WCM\AstroFields\MetaBox\Templates\Table;
 use WCM\AstroFields\Core\Commands\ViewCmd;
 
 use WCM\AstroFields\MetaBox\Views\MetaBoxView;
+use WCM\AstroFields\Settings\Commands\DeleteOption;
+use WCM\AstroFields\Settings\Commands\SaveOption;
 use WCM\AstroFields\Standards\Templates\InputFieldTmpl;
 use WCM\AstroFields\Standards\Templates\PasswordFieldTmpl;
 use WCM\AstroFields\Standards\Templates\RadioFieldTmpl;
@@ -38,11 +40,15 @@ use WCM\AstroFields\UserMeta\Commands\SaveMeta as SaveUserMeta;
 use WCM\AstroFields\UserMeta\Commands\DeleteMeta as DeleteUserMeta;
 use WCM\AstroFields\UserMeta\Receivers\UserMetaValue;
 
+use WCM\AstroFields\Settings\Commands\SettingsSection;
+use WCM\AstroFields\Settings\Receivers\OptionValue;
+
 
 // Drop in Composer autoloader
 require_once plugin_dir_path( __FILE__ )."vendor/autoload.php";
 
 
+### POST META
 add_action( 'wp_loaded', function()
 {
 	if ( ! is_admin() )
@@ -138,6 +144,8 @@ add_action( 'wp_loaded', function()
 	$meta_box->attach( $meta_box_cmd );
 } );
 
+
+### USER META
 add_action( 'wp_loaded', function()
 {
 	if ( ! is_admin() )
@@ -163,5 +171,37 @@ add_action( 'wp_loaded', function()
 		) )
 		->attach( new DeleteUserMeta )
 		->attach( new SaveUserMeta )
+		->attach( new SanitizeString );
+} );
+
+
+### SETTINGS SECTION
+add_action( 'wp_loaded', function()
+{
+	if ( ! is_admin() )
+		return;
+
+	// Commands
+	$section = new SettingsSection( 'Hello', 'foo' );
+	$input_view = new ViewCmd;
+	$input_view
+		->setContext( 'admin_head-options-{type}.php' )
+		->setProvider( new OptionValue )
+		->setTemplate( new InputFieldTmplUser );
+
+	// Entity: Field
+	$input_field = new Entity( 'wcm_settings_section', array(
+		'general',
+		'permalink',
+	) );
+	// Attach Commands
+	$input_field
+		->attach( $input_view, array(
+			'attributes' => array(
+				'class' => 'regular-text',
+			),
+		) )
+		->attach( new DeleteOption )
+		->attach( new SaveOption )
 		->attach( new SanitizeString );
 } );
