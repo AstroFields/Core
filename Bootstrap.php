@@ -287,3 +287,47 @@ add_action( 'after_setup_theme', function()
 		return $content;
 	} );
 } );
+
+add_action( 'comment_form_before_fields', function()
+{
+	$author_view = new PublicFieldViewCmd;
+	$author_view
+		->setContext( 'comment_form_field_author' )
+		->setProvider( new PublicFieldProvider )
+		->setTemplate( new InputFieldTmpl );
+
+	$author_field = new Entity( 'comment_form_field_author' );
+	$author_field->attach( $author_view, array(
+		'default' => 'Hello!'
+	) );
+
+
+	$email_view = new PublicFieldViewCmd;
+	$email_view
+		->setContext( 'comment_form_field_email' )
+		->setProvider( new PublicFieldProvider )
+		->setTemplate( new InputFieldTmpl );
+
+	$email_field = new Entity( 'comment_form_field_email' );
+	$email_field->attach( $email_view );
+
+
+	$url_view = new PublicFieldViewCmd;
+	$url_view
+		->setContext( 'comment_form_field_url' )
+		->setProvider( new PublicFieldProvider )
+		->setTemplate( new InputFieldTmpl );
+
+	$url_field = new Entity( 'comment_form_field_url' );
+	$url_field->attach( $url_view );
+
+
+	$comment_view = new PublicFieldViewCmd;
+	$comment_view
+		->setContext( 'comment_form_field_comment' )
+		->setProvider( new PublicFieldProvider )
+		->setTemplate( new TextareaFieldTmpl );
+
+	$comment_field = new Entity( 'comment_form_field_comment' );
+	$comment_field->attach( $comment_view );
+} );

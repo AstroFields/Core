@@ -11,7 +11,7 @@ class Entity implements \SplSubject
 	private $key;
 
 	/** @type Array */
-	private $types;
+	private $types = array();
 
 	/** @type Array */
 	private $proxy = array();
@@ -31,11 +31,17 @@ class Entity implements \SplSubject
 		$this->commands  = new \SplObjectstorage;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getKey()
 	{
 		return $this->key;
 	}
 
+	/**
+	 * @return Array
+	 */
 	public function getTypes()
 	{
 		return $this->types;
@@ -68,8 +74,6 @@ class Entity implements \SplSubject
 				$data
 			) );
 
-			# @TODO Rethink if we can somehow still add the Command to the \SplObjectstorage
-			# without running into the problem that we would manually trigger it a second time.
 			$this->dispatch( $command, $data );
 
 			return $this;
@@ -102,60 +106,14 @@ class Entity implements \SplSubject
 	 */
 	protected function parseContext( $context, Array $info = array() )
 	{
-		$input = array_filter( array(
+		$input = array(
 			'{key}'   => array( $this->key ),
 			'{type}'  => $this->types,
 			'{proxy}' => $this->proxy,
-		) );
+		);
 
 		$parser = new ContextParser( $input, $context );
 		return $parser->getResult();
-	}
-
-	/**
-	 * Build the final array of Contexts
-	 * @author Jon
-	 * @link http://stackoverflow.com/a/6313346/376483
-	 * @param array $input
-	 * @return array
-	 */
-	public function cartesian( Array $input )
-	{
-		$result = array();
-
-		while ( list( $key, $values ) = each( $input ) )
-		{
-			if ( empty( $values ) )
-				continue;
-
-			if ( empty( $result ) )
-			{
-				foreach ( $values as $value )
-					$result[] = array( $key => $value );
-			}
-			else
-			{
-				$append = array();
-
-				foreach ( $result as &$product )
-				{
-					$product[ $key ] = array_shift( $values );
-					$copy = $product;
-
-					foreach ( $values as $item )
-					{
-						$copy[ $key ] = $item;
-						$append[] = $copy;
-					}
-
-					array_unshift( $values, $product[ $key ] );
-				}
-
-				$result = array_merge( $result, $append );
-			}
-		}
-
-		return $result;
 	}
 
 	/**

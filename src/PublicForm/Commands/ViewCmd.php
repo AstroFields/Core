@@ -2,6 +2,7 @@
 
 namespace WCM\AstroFields\PublicForm\Commands;
 
+use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 use WCM\AstroFields\Core\Commands\ViewAwareInterface;
 use WCM\AstroFields\Core\Receivers\FieldInterface;
 use WCM\AstroFields\Core\Receivers\DataProviderInterface;
@@ -11,8 +12,11 @@ use WCM\AstroFields\Core\Templates\TemplateInterface;
 use WCM\AstroFields\PublicForm\Views\EntityView as View;
 
 
-class ViewCmd implements \SplObserver, ViewAwareInterface
+class ViewCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
 {
+	/** @var string */
+	protected $context = '';
+
 	/** @type ViewableInterface */
 	private $view;
 
@@ -54,5 +58,17 @@ class ViewCmd implements \SplObserver, ViewAwareInterface
 		$this->template = $template;
 
 		return $this;
+	}
+
+	public function setContext( $context )
+	{
+		$this->context = $context;
+
+		return $this;
+	}
+
+	public function getContext()
+	{
+		return $this->context;
 	}
 }

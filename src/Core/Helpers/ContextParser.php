@@ -24,7 +24,7 @@ class ContextParser
 	 */
 	public function __construct( Array $input, $context )
 	{
-		$this->input   = $input;
+		$this->input   = array_filter( $input );
 		$this->context = $context;
 	}
 
@@ -47,11 +47,11 @@ class ContextParser
 	public function map( Array $product, $context )
 	{
 		$results = array();
-		foreach ( $product as $p )
+		foreach ( $product as $part )
 		{
 			$temp = $context;
-			foreach ( $p as $k => $v )
-				$temp = str_replace( $k, $v, $temp );
+			foreach ( $part as $key => $value )
+				$temp = str_replace( $key, $value, $temp );
 
 			$results[] = $temp;
 		}
@@ -73,11 +73,11 @@ class ContextParser
 			$product
 		);
 
-		return array_map( function ( $n ) use ( $keys )
+		return array_map( function( $n ) use ( $keys )
 			{
 				return array_combine(
 					$keys,
-					$n
+					(array) $n
 				);
 			}, $product );
 	}
@@ -90,7 +90,7 @@ class ContextParser
 	public function zip( Array $array1, Array $array2 )
 	{
 		$parser = $this;
-		return array_reduce( $array1, function ( $value, $key ) use ( $array2, $parser )
+		return array_reduce( $array1, function( $value, $key ) use ( $array2, $parser )
 			{
 				return array_merge(
 					$value,
