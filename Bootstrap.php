@@ -11,6 +11,9 @@ use WCM\AstroFields\Core\Mediators\Entity;
 
 use WCM\AstroFields\Core\Commands\ViewCmd;
 
+use WCM\AstroFields\PublicForm\Commands\Form;
+use WCM\AstroFields\PublicForm\Receivers\Field;
+use WCM\AstroFields\PublicForm\Templates\FormTmpl;
 use WCM\AstroFields\Security\Commands\SanitizeString;
 use WCM\AstroFields\Security\Commands\SanitizeMail;
 
@@ -34,6 +37,9 @@ use WCM\AstroFields\Settings\Commands\SanitizeString as SanitzeOptionsString;
 use WCM\AstroFields\Settings\Receivers\OptionValue;
 use WCM\AstroFields\Settings\Templates\Table as SettingsTmpl;
 use WCM\AstroFields\Settings\Templates\InputSettingsTmpl;
+
+use WCM\AstroFields\PublicForm\Commands\ViewCmd as PublicFieldViewCmd;
+use WCM\AstroFields\PublicForm\Receivers\Field as PublicFieldProvider;
 
 use WCM\AstroFields\Standards\Templates\InputFieldTmpl;
 use WCM\AstroFields\Standards\Templates\PasswordFieldTmpl;
@@ -145,7 +151,7 @@ add_action( 'wp_loaded', function()
 	$meta_box->attach( $meta_box_cmd );
 } );
 
-
+### Add Options Page to admin menu
 add_action( 'admin_menu', function()
 {
 	add_menu_page(
@@ -157,12 +163,16 @@ add_action( 'admin_menu', function()
 		{
 			?>
 			<div class="wrap">
-				<h2><?php print $GLOBALS['title']; ?></h2>
+				<h2>
+					<?php print $GLOBALS['title']; ?>
+				</h2>
 				<?php settings_errors(); ?>
 				<form action="options.php" method="POST">
 					<?php
-					settings_fields( 'trac' );
+					#settings_fields( 'trac' );
 					do_settings_sections( 'trac' );
+					do_settings_sections( 'default' );
+					do_settings_sections( 'general' );
 					submit_button();
 					?>
 				</form>
@@ -197,8 +207,9 @@ add_action( 'admin_init', function()
 		->attach( new SanitzeOptionsString );
 
 	// Command: Settings Section
-	$section_cmd = new SettingsSectionCmd( 'Some Title' );
+	$section_cmd = new SettingsSectionCmd;
 	$section_cmd
+		->setTitle( 'Some Title' )
 		->attach( $input_field, 5 )
 		->setTemplate( new SettingsTmpl );
 
@@ -206,10 +217,10 @@ add_action( 'admin_init', function()
 	$section = new Entity( 'wcm_settings_section', array(
 		'general',
 		'permalink',
+		'trac',
 	) );
 	$section->attach( $section_cmd );
 } );
-
 
 ### USER META
 add_action( 'wp_loaded', function()
@@ -220,24 +231,59 @@ add_action( 'wp_loaded', function()
 	// Commands
 	$input_view = new ViewCmd;
 	$input_view
-		->setContext( '{type}_user_profile' )
+		->setContext( '{proxy}_user_profile' )
 		->setProvider( new UserMetaValue )
 		->setTemplate( new InputFieldTmplUser );
 
 	// Entity: Field
-	# @TODO Update the context parser. This sucks.
-	$input_field = new Entity( 'wcm_input_user', array(
-		'edit',
-		'show',
-	) );
+	$input_field = new Entity( 'wcm_input_user' );
 	// Attach Commands
 	$input_field
-		->attach( $input_view, array(
-			'attributes' => array(
-				'class' => 'regular-text',
-			),
-		) )
+		->setProxy( array( 'edit', 'show' ) )
+		->attach(
+			$input_view,
+			array(
+				'attributes' => array(
+					'class' => 'regular-text',
+				),
+			)
+		)
 		->attach( new DeleteUserMeta )
 		->attach( new SaveUserMeta )
 		->attach( new SanitizeString );
+} );
+
+add_action( 'after_setup_theme', function()
+{
+	if ( is_admin() )
+		return;
+
+	// Commands
+	$input_view = new PublicFieldViewCmd;
+	$input_view
+		->setProvider( new PublicFieldProvider )
+		->setTemplate( new InputFieldTmpl );
+
+	// Entity: Field
+	$input_field = new Entity( 'wcm_public_input' );
+	// Attach Commands
+	$input_field
+		->attach( $input_view );
+
+	// Command: Form
+	$form_cmd = new Form;
+	// Attach Fields
+	$form_cmd
+		->attach( $input_field, 5 )
+		->setTemplate( new FormTmpl );
+
+	// Entity: Form
+	$form = new Entity( 'wcm_public_form' );
+	$form->attach( $form_cmd );
+
+	add_filter( 'the_content', function( $content ) use ( $form )
+	{
+		$form->notify();
+		return $content;
+	} );
 } );

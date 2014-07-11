@@ -1,33 +1,24 @@
 <?php
 
-namespace WCM\AstroFields\Settings\Commands;
+namespace WCM\AstroFields\PublicForm\Commands;
 
-use WCM\AstroFields\Core\Mediators\Entity;
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 use WCM\AstroFields\Core\Views\ViewableInterface;
-use WCM\AstroFields\Settings\Views\SettingsSection as View;
 
-/**
- * Class SettingsSection
- * @package WCM\AstroFields\MetaBox\Commands
- * Written while waiting in the train on the station of beautiful Treibach-Althofen/Carinthia
- */
-class SettingsSection implements \SplObserver, ContextAwareInterface
+use WCM\AstroFields\Core\Commands\ViewAwareInterface;
+use WCM\AstroFields\PublicForm\Views\FormView as View;
+
+class Form implements \SplObserver, ContextAwareInterface
 {
 	/** @type string */
-	private $context = 'load-options-{type}.php';
-	# private $context = 'admin_head-options-{type}.php';
-	# private $context = 'load-toplevel_page_{trac}';
+	private $context = '';
 
 	/** @type string */
 	private $key;
 
 	/** @type array $types */
 	private $types;
-
-	/** @type string */
-	private $title = '';
 
 	/** @type ViewableInterface */
 	private $view;
@@ -59,30 +50,11 @@ class SettingsSection implements \SplObserver, ContextAwareInterface
 		$this->view->setData( $this->receiver );
 		$this->view->setTemplate( $this->template );
 
-		$this->addSection();
-	}
-
-	/**
-	 * Callback to add the meta box
-	 */
-	public function addSection()
-	{
-		foreach ( $this->types as $type )
-		{
-			add_settings_section(
-				$this->key,
-				$this->title,
-				array( $this->view, 'process' ),
-				$type
-			);
-		}
-#var_dump( $GLOBALS['wp_settings_sections'] );
+		$this->view->process();
 	}
 
 	/**
 	 * Attach a \SplSubject
-	 * Adds the entity name to the whitelist so WP core can
-	 * care about saving the option value(s).
 	 * @param \SplSubject $command
 	 * @param int         $priority
 	 * @return $this|void
@@ -90,26 +62,6 @@ class SettingsSection implements \SplObserver, ContextAwareInterface
 	public function attach( \SplSubject $command, $priority = 0 )
 	{
 		$this->receiver->insert( $command, $priority );
-
-		/** @type Entity $command */
-		foreach ( $command->getTypes() as $type )
-		{
-			register_setting( $type, $command->getKey() );
-			add_settings_field(
-				$command->getKey(),
-				'Foo',
-				array( $this->view, 'process' ),
-				$type,
-				'default'
-			);
-		}
-
-		return $this;
-	}
-
-	public function setTitle( $title )
-	{
-		$this->title = $title;
 
 		return $this;
 	}
@@ -124,13 +76,6 @@ class SettingsSection implements \SplObserver, ContextAwareInterface
 	public function getContext()
 	{
 		return $this->context;
-	}
-
-	public function setProvider( \SplPriorityQueue $receiver )
-	{
-		$this->receiver = $receiver;
-
-		return $this;
 	}
 
 	public function setTemplate( TemplateInterface $template )

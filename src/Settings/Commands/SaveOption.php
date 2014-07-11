@@ -20,7 +20,7 @@ class SaveOption
 	 */
 	public function update( \SplSubject $subject, Array $data = null )
 	{
-		$this->data   = $data;
+		$this->data = $data;
 
 		if (
 			! isset( $_POST[ $data['key'] ] )
@@ -28,10 +28,8 @@ class SaveOption
 		)
 			return;
 
-#		$updated = $this->save();
-#exit( var_dump( $updated ) );
-#		$notice  = $this->check( $updated );
-		# @TODO Do something with the notice
+		$updated = $this->save();
+		$this->check( $updated );
 	}
 
 	public function setContext( $context )
@@ -56,32 +54,16 @@ class SaveOption
 
 	public function check( $updated )
 	{
-		$notice = '';
-		/** @var \WP_Error $updated */
-		if ( is_wp_error( $updated ) )
-		{
-			$notice = sprintf(
-				'%s: %s',
-				$updated->get_error_code(),
-				$updated->get_error_message()
-			);
-		}
-		elseif ( is_int( $updated ) )
-		{
-			esc_url( add_query_arg( 'message', 5, get_permalink( $this->postID ) ) );
-			$notice = "New value added for: {$this->data['key']}";
-		}
-		elseif ( ! $updated )
-		{
-			esc_url( add_query_arg( 'message', 6, get_permalink( $this->postID ) ) );
-			$notice = 'Post meta not updated';
-		}
-		else
-		{
-			esc_url( add_query_arg( 'message', 7, get_permalink( $this->postID ) ) );
-			$notice = 'Post Meta updated';
-		}
+		if ( $updated )
+			return;
 
-		return $notice;
+		add_settings_error(
+			$_POST[ $this->data['key'] ],
+			$this->data['key'],
+			sprintf(
+				'Invalid value for %s',
+				$this->data['key']
+			)
+		);
 	}
 }

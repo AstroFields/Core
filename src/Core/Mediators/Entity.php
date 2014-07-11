@@ -3,19 +3,27 @@
 namespace WCM\AstroFields\Core\Mediators;
 
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
+use WCM\AstroFields\Core\Helpers\ContextParser;
 
 class Entity implements \SplSubject
 {
-	/** @var string */
+	/** @type string */
 	private $key;
 
-	/** @var Array */
+	/** @type Array */
 	private $types;
 
-	/** @var \SplObjectstorage */
+	/** @type Array */
+	private $proxy = array();
+
+	/** @type \SplObjectstorage */
 	private $commands;
 
-	public function __construct( $key, Array $types )
+	/**
+	 * @param string $key
+	 * @param array  $types
+	 */
+	public function __construct( $key, Array $types = array() )
 	{
 		$this->key   = $key;
 		$this->types = $types;
@@ -73,34 +81,81 @@ class Entity implements \SplSubject
 	}
 
 	/**
+	 * Attach placeholders for the context
+	 * @param array $proxy
+	 * @return $this
+	 */
+	public function setProxy( Array $proxy )
+	{
+		$this->proxy = $proxy;
+
+		return $this;
+	}
+
+	/**
 	 * Build the context (hooks/filters) array
 	 * When a context is provided when attaching a Command,
 	 * you can use `{key}` and `{type}` as placeholder.
-	 * @TODO In a future version AstroFields will allow custom replacements
 	 * @param  string $context
 	 * @param  array  $info
 	 * @return array
 	 */
 	protected function parseContext( $context, Array $info = array() )
 	{
-		# @TODO Future version
-		# preg_match_all( '/\{{1}([\w]+)\}{1}/', $context, $m );
-		# `$matches[1]` contains all replacement strings
-		# var_dump( $m[1] );
+		$input = array_filter( array(
+			'{key}'   => array( $this->key ),
+			'{type}'  => $this->types,
+			'{proxy}' => $this->proxy,
+		) );
 
-		$results = array();
-		foreach ( $this->types as $type )
+		$parser = new ContextParser( $input, $context );
+		return $parser->getResult();
+	}
+
+	/**
+	 * Build the final array of Contexts
+	 * @author Jon
+	 * @link http://stackoverflow.com/a/6313346/376483
+	 * @param array $input
+	 * @return array
+	 */
+	public function cartesian( Array $input )
+	{
+		$result = array();
+
+		while ( list( $key, $values ) = each( $input ) )
 		{
-			$results[] = str_replace(
-				array( "{type}", "{key}", ),
-				array( $type, $this->key, ),
-				$context
-			);
-		}
-		$results = array_filter( $results );
-		$results = array_unique( $results );
+			if ( empty( $values ) )
+				continue;
 
-		return $results;
+			if ( empty( $result ) )
+			{
+				foreach ( $values as $value )
+					$result[] = array( $key => $value );
+			}
+			else
+			{
+				$append = array();
+
+				foreach ( $result as &$product )
+				{
+					$product[ $key ] = array_shift( $values );
+					$copy = $product;
+
+					foreach ( $values as $item )
+					{
+						$copy[ $key ] = $item;
+						$append[] = $copy;
+					}
+
+					array_unshift( $values, $product[ $key ] );
+				}
+
+				$result = array_merge( $result, $append );
+			}
+		}
+
+		return $result;
 	}
 
 	/**
