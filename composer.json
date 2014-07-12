@@ -1,16 +1,25 @@
 {
-    "name" : "wcm/astrofields",
-    "description" : "A WordPress bundle to add fields and a bunch of other things",
-    "license" : "MIT",
-    "authors" : [
+    "name"        : "wcm/astrofields",
+    "description" : "A PHP Pattern Library for Fields, Forms and other User Input",
+    "keywords"    : [ "wordpress", "forms", "fields" ],
+    "type"        : "wordpress-plugin",
+    "homepage"    : "https://github.com/AstroFields/Core",
+    "license"     : "MIT",
+    "authors"     : [
         {
             "name"  : "Kaiser Franz Josef",
             "email" : "wecodemore@gmail.com"
         }
     ],
+    "support"     : {
+        "issues" : "https://github.com/AstroFields/Core/issues"
+    },
     "minimum-stability" : "stable",
-    "require" : {},
-    "autoload" : {
+    "require"     : {
+        "php"                 : ">=5.3",
+        "composer/installers" : "~1.0"
+    },
+    "autoload"    : {
         "psr-4" : {
             "WCM\\AstroFields\\" : "src\\"
         }
