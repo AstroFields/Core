@@ -1,5 +1,6 @@
 {
-    "name"        : "astrofields/core",
+    "name"        : "wcm/astrofields",
+    "version"     : "0.1.0",
     "description" : "A PHP Pattern Library for Fields, Forms and other User Input",
     "keywords"    : [ "wordpress", "forms", "fields" ],
     "type"        : "wordpress-plugin",
