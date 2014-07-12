@@ -3,7 +3,6 @@
     "version"     : "0.1.0",
     "description" : "A PHP Pattern Library for Fields, Forms and other User Input",
     "keywords"    : [ "wordpress", "forms", "fields" ],
-    "type"        : "wordpress-plugin",
     "homepage"    : "https://github.com/AstroFields/Core",
     "license"     : "MIT",
     "authors"     : [
@@ -15,7 +14,7 @@
     "support"     : {
         "issues" : "https://github.com/AstroFields/Core/issues"
     },
-    "minimum-stability" : "stable",
+    "minimum-stability" : "dev",
     "require"     : {
         "php"                 : ">=5.3",
         "composer/installers" : "~1.0"
