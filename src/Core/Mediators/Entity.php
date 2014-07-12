@@ -59,6 +59,7 @@ class Entity implements \SplSubject
 	public function attach( \SplObserver $command, Array $info = array() )
 	{
 		# @TODO Fix `type` vs. `types` to the latter here and in all dependencies.
+		# @TODO not sure if this is something that really should be "fixed".
 		$data = $info + array(
 			'key'  => $this->key,
 			'type' => $this->types,
@@ -69,6 +70,7 @@ class Entity implements \SplSubject
 			AND '' !== $command->getContext()
 			)
 		{
+			// Build the context by replacing {placeholders}
 			$command->setContext( $this->parseContext(
 				$command->getContext(),
 				$data
@@ -106,6 +108,12 @@ class Entity implements \SplSubject
 	 */
 	protected function parseContext( $context, Array $info = array() )
 	{
+		// Allow passing the {proxy} as part of the data/info Array
+		// Use the method to use type hinting in case it's no Array.
+		empty( $this->proxy )
+		AND isset( $info['proxy'] )
+			AND $this->setProxy( $info['proxy'] );
+
 		$input = array(
 			'{key}'   => array( $this->key ),
 			'{type}'  => $this->types,
@@ -178,7 +186,7 @@ class Entity implements \SplSubject
 			/** @type $command */
 			add_filter( $context, function() use ( $subject, $command, $data, $context )
 			{
-				// Provide all filter arguments to the Command
+				// Provide all filter arguments to the Command as `args` Array
 				$data['args'] = func_get_args();
 
 				return $command->update(
