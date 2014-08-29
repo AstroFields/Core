@@ -23,7 +23,7 @@ class Entity implements \SplSubject
 	 * @param string $key
 	 * @param array  $types
 	 */
-	public function __construct( $key, Array $types = array() )
+	public function __construct( $key = '', Array $types = array() )
 	{
 		$this->key   = $key;
 		$this->types = $types;
@@ -37,6 +37,43 @@ class Entity implements \SplSubject
 	public function getKey()
 	{
 		return $this->key;
+	}
+
+	/**
+	 * Set a name for the Entity
+	 * @param string $key
+	 * @throws \LogicException
+	 */
+	public function setKey( $key )
+	{
+		if ( ! empty( $key ) )
+			throw new \LogicException( 'An entity can only be named once' );
+
+		$this->key = $key;
+	}
+
+	/**
+	 * Attach types to this entity
+	 * @TODO Freeze at one point
+	 * @param  array $types
+	 * @throws \LogicException
+	 */
+	public function setTypes( Array $types )
+	{
+		if ( ! empty( $types ) )
+			throw new \LogicException( 'This entity already has types set' );
+
+		$this->types = $types;
+	}
+
+	/**
+	 * Attach an additional type
+	 * @TODO Freeze at one point
+	 * @param $type
+	 */
+	public function setType( $type )
+	{
+		$this->types[] = $type;
 	}
 
 	/**
