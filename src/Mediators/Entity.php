@@ -46,7 +46,7 @@ class Entity implements \SplSubject
 	 */
 	public function setKey( $key )
 	{
-		if ( ! empty( $key ) )
+		if ( ! empty( $this->key ) )
 			throw new \LogicException( 'An entity can only be named once' );
 
 		$this->key = $key;
@@ -60,7 +60,7 @@ class Entity implements \SplSubject
 	 */
 	public function setTypes( Array $types )
 	{
-		if ( ! empty( $types ) )
+		if ( ! empty( $this->types ) )
 			throw new \LogicException( 'This entity already has types set' );
 
 		$this->types = $types;
