@@ -2,8 +2,6 @@
 
 namespace WCM\AstroFields\Core\Views;
 
-use WCM\AstroFields\Core\Views\ViewableInterface;
-use WCM\AstroFields\Core\Views\DataAwareInterface;
 use WCM\AstroFields\Core\Receivers\FieldInterface;
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 
