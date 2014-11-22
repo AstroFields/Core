@@ -74,12 +74,12 @@ class ContextParser
 		);
 
 		return array_map( function( $n ) use ( $keys )
-			{
-				return array_combine(
-					$keys,
-					(array) $n
-				);
-			}, $product );
+		{
+			return array_combine(
+				$keys,
+				(array) $n
+			);
+		}, $product );
 	}
 
 	/**
@@ -91,12 +91,12 @@ class ContextParser
 	{
 		$parser = $this;
 		return array_reduce( $array1, function( $value, $key ) use ( $array2, $parser )
-			{
-				return array_merge(
-					$value,
-					$parser->inject( $key, $array2 )
-				);
-			}, array() );
+		{
+			return array_merge(
+				$value,
+				$parser->inject( $key, $array2 )
+			);
+		}, array() );
 	}
 
 	/**
@@ -107,11 +107,11 @@ class ContextParser
 	public function inject( $element, Array $array )
 	{
 		return array_map( function( $n ) use ( $element )
-			{
-				return array_merge(
-					(array) $element,
-					(array) $n
-				);
-			}, $array );
+		{
+			return array_merge(
+				(array) $element,
+				(array) $n
+			);
+		}, $array );
 	}
 }
