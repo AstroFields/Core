@@ -147,9 +147,11 @@ class Entity implements \SplSubject
 	{
 		// Allow passing the {proxy} as part of the data/info Array
 		// Use the method to use type hinting in case it's no Array.
-		empty( $this->proxy )
-		AND isset( $info['proxy'] )
-			AND $this->setProxy( $info['proxy'] );
+		if (
+			empty( $this->proxy )
+			AND isset( $info['proxy'] )
+		)
+			$this->setProxy( $info['proxy'] );
 
 		$input = array(
 			'{key}'   => array( $this->key ),
