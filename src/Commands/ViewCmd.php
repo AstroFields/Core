@@ -2,9 +2,6 @@
 
 namespace WCM\AstroFields\Core\Commands;
 
-use WCM\AstroFields\Core\Commands\ViewAwareInterface;
-use WCM\AstroFields\Core\Commands\ContextAwareInterface;
-
 use WCM\AstroFields\Core\Receivers\DataProviderInterface;
 use WCM\AstroFields\Core\Receivers\FieldInterface;
 
