@@ -14,7 +14,7 @@ interface LabelInterface extends DataProviderInterface
 	public function getKey();
 
 	/**
-	 * Retrieve the value for the tag value
+	 * Retrieve the value for the HTML tag
 	 * @return string
 	 */
 	public function getLabel();
