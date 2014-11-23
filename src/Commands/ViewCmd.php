@@ -2,7 +2,7 @@
 
 namespace WCM\AstroFields\Core\Commands;
 
-use WCM\AstroFields\Core\Receivers\DataProviderInterface;
+use WCM\AstroFields\Core\Receivers\DataReceiverInterface;
 use WCM\AstroFields\Core\Receivers\EntityProviderInterface;
 
 use WCM\AstroFields\Core\Views\ViewableInterface;
@@ -46,7 +46,7 @@ class ViewCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
 		$this->view->process();
 	}
 
-	public function setProvider( DataProviderInterface $receiver )
+	public function setProvider( DataReceiverInterface $receiver )
 	{
 		$this->receiver = $receiver;
 

@@ -61,7 +61,7 @@ class Entity implements \SplSubject
 	public function setTypes( Array $types )
 	{
 		if ( ! empty( $this->types ) )
-			throw new \LogicException( 'This entity already has types set' );
+			throw new \LogicException( 'This entity already has types set. To add a type, use `addType()`.' );
 
 		$this->types = $types;
 	}
@@ -71,7 +71,7 @@ class Entity implements \SplSubject
 	 * @TODO Freeze at one point
 	 * @param $type
 	 */
-	public function setType( $type )
+	public function addType( $type )
 	{
 		$this->types[] = $type;
 	}
@@ -98,8 +98,8 @@ class Entity implements \SplSubject
 		# @TODO Fix `type` vs. `types` to the latter here and in all dependencies.
 		# @TODO not sure if this is something that really should be "fixed".
 		$data = $info + array(
-			'key'  => $this->key,
-			'type' => $this->types,
+			'key'   => $this->key,
+			'types' => $this->types,
 		);
 
 		if (

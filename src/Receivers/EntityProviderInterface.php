@@ -2,7 +2,7 @@
 
 namespace WCM\AstroFields\Core\Receivers;
 
-interface EntityProviderInterface extends DataProviderInterface
+interface EntityProviderInterface extends DataReceiverInterface
 {
 	public function getKey();
 
