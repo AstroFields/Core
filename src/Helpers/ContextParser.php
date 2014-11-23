@@ -5,12 +5,11 @@ namespace WCM\AstroFields\Core\Helpers;
 /**
  * Class ContextParser
  * @package WCM\AstroFields\Core\Helpers
- *
- * @author deceze
+ * Based upon the answer by @author deceze on StackOverflow
  * @link http://stackoverflow.com/a/6313849/376483
  * @license CC-BY-SA 3.0
  */
-class ContextParser
+class ContextParser implements ParserInterface
 {
 	/** @type Array */
 	private $input;
@@ -22,7 +21,7 @@ class ContextParser
 	 * @param array  $input
 	 * @param string $context
 	 */
-	public function __construct( Array $input, $context )
+	public function setup( Array $input, $context )
 	{
 		$this->input   = array_filter( $input );
 		$this->context = $context;
@@ -44,7 +43,7 @@ class ContextParser
 	 * @param string $context
 	 * @return array
 	 */
-	public function map( Array $product, $context )
+	protected function map( Array $product, $context )
 	{
 		$results = array();
 		foreach ( $product as $part )
@@ -63,7 +62,7 @@ class ContextParser
 	 * @param array $array
 	 * @return array
 	 */
-	public function cartesian( Array $array )
+	protected function cartesian( Array $array )
 	{
 		$keys    = array_keys( $array );
 		$product = array_shift( $array );
@@ -87,7 +86,7 @@ class ContextParser
 	 * @param array $array2
 	 * @return mixed
 	 */
-	public function zip( Array $array1, Array $array2 )
+	protected function zip( Array $array1, Array $array2 )
 	{
 		$parser = $this;
 		return array_reduce( $array1, function( $value, $key ) use ( $array2, $parser )
@@ -104,7 +103,7 @@ class ContextParser
 	 * @param array  $array
 	 * @return array
 	 */
-	public function inject( $element, Array $array )
+	protected function inject( $element, Array $array )
 	{
 		return array_map( function( $n ) use ( $element )
 		{

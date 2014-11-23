@@ -157,7 +157,10 @@ class Entity implements \SplSubject
 			'{proxy}' => $this->proxy,
 		);
 
-		$parser = new ContextParser( $input, $context );
+		// @TODO Allow exchanging the parser
+		$parser = new ContextParser;
+		$parser->setup( $input, $context );
+
 		return $parser->getResult();
 	}
 
