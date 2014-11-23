@@ -28,7 +28,7 @@ class Entity implements \SplSubject
 		$this->key   = $key;
 		$this->types = $types;
 
-		$this->commands  = new \SplObjectstorage;
+		$this->commands = new \SplObjectstorage;
 	}
 
 	/**
@@ -61,7 +61,7 @@ class Entity implements \SplSubject
 	public function setTypes( Array $types )
 	{
 		if ( ! empty( $this->types ) )
-			throw new \LogicException( 'This entity already has types set. To add a type, use `addType()`.' );
+			throw new \LogicException( 'To add additional types, use `addType()`.' );
 
 		$this->types = $types;
 	}
@@ -193,14 +193,19 @@ class Entity implements \SplSubject
 
 	/**
 	 * Notify all attached Commands to execute
+	 * $subject = $this Alias:
+	 * PHP 5.3 fix, as Closures don't know where to point $this prior to 5.4
+	 * props Malte "s1lv3r" Witt
 	 */
 	public function notify()
 	{
+		$subject = $this;
+
 		$this->commands->rewind();
-		foreach ( $this->commands as $o )
+		foreach ( $this->commands as $command )
 		{
 			$this->commands->current()->update(
-				$this,
+				$subject,
 				$this->commands->getInfo()
 			);
 		}
