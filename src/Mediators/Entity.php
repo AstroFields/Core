@@ -95,8 +95,6 @@ class Entity implements \SplSubject
 	 */
 	public function attach( \SplObserver $command, Array $info = array() )
 	{
-		# @TODO Fix `type` vs. `types` to the latter here and in all dependencies.
-		# @TODO not sure if this is something that really should be "fixed".
 		$data = $info + array(
 			'key'   => $this->key,
 			'types' => $this->types,
@@ -180,7 +178,8 @@ class Entity implements \SplSubject
 	}
 
 	/**
-	 * Retrieve all attached Commands
+	 * Retrieve all attached Commands.
+	 * Command storage is returned as clone to avoid altering the original.
 	 * @return \SplObjectstorage
 	 */
 	public function getCommands()
@@ -233,7 +232,7 @@ class Entity implements \SplSubject
 				// Provide all filter arguments to the Command as `args` Array
 				$data['args'] = func_get_args();
 
-				return $command->update(
+				$command->update(
 					$subject,
 					$data
 				);
