@@ -3,11 +3,11 @@
 namespace WCM\AstroFields\Core\Commands;
 
 use WCM\AstroFields\Core\Receivers\DataProviderInterface;
-use WCM\AstroFields\Core\Receivers\FieldInterface;
+use WCM\AstroFields\Core\Receivers\EntityProviderInterface;
 
 use WCM\AstroFields\Core\Views\ViewableInterface;
 use WCM\AstroFields\Core\Views\DataAwareInterface;
-use WCM\AstroFields\Core\Views\Field as View;
+use WCM\AstroFields\Core\Views\BaseView;
 
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 
@@ -20,7 +20,7 @@ class ViewCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
 	/** @type ViewableInterface|DataAwareInterface */
 	private $view;
 
-	/** @type FieldInterface */
+	/** @type EntityProviderInterface */
 	private $receiver;
 
 	/** @type TemplateInterface */
@@ -28,7 +28,7 @@ class ViewCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
 
 	public function __construct()
 	{
-		$this->view = new View;
+		$this->view = new BaseView;
 	}
 
 	/**

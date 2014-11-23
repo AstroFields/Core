@@ -2,7 +2,7 @@
 
 namespace WCM\AstroFields\Core\Views;
 
-use WCM\AstroFields\Core\Receivers\FieldInterface;
+use WCM\AstroFields\Core\Receivers\EntityProviderInterface;
 use WCM\AstroFields\Core\Templates\TemplateInterface;
 
 class BaseView implements DataAwareInterface, ViewableInterface
@@ -20,7 +20,7 @@ class BaseView implements DataAwareInterface, ViewableInterface
 		return $this;
 	}
 
-	public function setData( FieldInterface $data )
+	public function setData( EntityProviderInterface $data )
 	{
 		$this->data = $data;
 
