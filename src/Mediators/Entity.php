@@ -86,7 +86,7 @@ class Entity implements \SplSubject
 
 	/**
 	 * Attach an SplObserver
-	 * If the context is empty, but ContextAwareInterface implemented,
+	 * Note: If the context is empty, but ContextAwareInterface implemented,
 	 * the context was deliberately emptied to allow manual triggering from
 	 * i.e. a Meta Box, an users profile, a custom form, etc.
 	 * @param \SplObserver $command
@@ -96,8 +96,8 @@ class Entity implements \SplSubject
 	public function attach( \SplObserver $command, Array $info = array() )
 	{
 		$data = $info + array(
-			'key'   => $this->key,
-			'types' => $this->types,
+			'key'   => $this->getKey(),
+			'types' => $this->getTypes(),
 		);
 
 		if (
@@ -136,7 +136,7 @@ class Entity implements \SplSubject
 	/**
 	 * Build the context (hooks/filters) array
 	 * When a context is provided when attaching a Command,
-	 * you can use `{key}` and `{type}` as placeholder.
+	 * you can use `{key}`, `{type}` and `{proxy}` as placeholder.
 	 * @param  string $context
 	 * @param  array  $info
 	 * @return array
@@ -152,8 +152,8 @@ class Entity implements \SplSubject
 			$this->setProxy( $info['proxy'] );
 
 		$input = array(
-			'{key}'   => array( $this->key ),
-			'{type}'  => $this->types,
+			'{key}'   => array( $this->getKey() ),
+			'{type}'  => $this->getTypes(),
 			'{proxy}' => $this->proxy,
 		);
 
@@ -229,16 +229,16 @@ class Entity implements \SplSubject
 
 		foreach ( $contexts as $context )
 		{
-			/** @type $command */
 			add_filter( $context, function() use ( $subject, $command, $data, $context )
 			{
 				// Provide all filter arguments to the Command as `args` Array
 				$data['args'] = func_get_args();
 
-				$command->update(
+				return $command->update(
 					$subject,
 					$data
 				);
+				# return call_user_func_array( [ $command, 'update' ], func_get_args() );
 
 			}, 10, PHP_INT_MAX -1 );
 		}

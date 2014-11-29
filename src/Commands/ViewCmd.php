@@ -2,33 +2,26 @@
 
 namespace WCM\AstroFields\Core\Commands;
 
-use WCM\AstroFields\Core\Receivers\DataReceiverInterface;
-use WCM\AstroFields\Core\Receivers\EntityProviderInterface;
-
-use WCM\AstroFields\Core\Views\ViewableInterface;
-use WCM\AstroFields\Core\Views\DataAwareInterface;
-use WCM\AstroFields\Core\Views\BaseView;
-
-use WCM\AstroFields\Core\Templates\TemplateInterface;
-
+use WCM\AstroFields\Core\Receivers;
+use WCM\AstroFields\Core\Templates;
 
 class ViewCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
 {
 	/** @var string */
 	protected $context = '';
 
-	/** @type ViewableInterface|DataAwareInterface */
-	private $view;
-
-	/** @type EntityProviderInterface */
+	/** @type Receivers\EntityProviderInterface */
 	private $receiver;
 
-	/** @type TemplateInterface */
+	/** @type Templates\TemplateInterface | Templates\PrintableInterface */
 	private $template;
 
-	public function __construct()
+	public function __construct(
+		Receivers\DataReceiverInterface $receiver,
+		Templates\TemplateInterface $template )
 	{
-		$this->view = new BaseView;
+		$this->receiver = $receiver;
+		$this->template = $template;
 	}
 
 	/**
@@ -38,22 +31,20 @@ class ViewCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
 	 */
 	public function update( \SplSubject $subject, Array $data = null )
 	{
-		$this->view->setTemplate( $this->template );
-
 		$this->receiver->setData( $data );
-		$this->view->setData( $this->receiver );
+		$this->template->attach( $this->receiver );
 
-		$this->view->process();
+		echo $this->template;
 	}
 
-	public function setProvider( DataReceiverInterface $receiver )
+	public function setProvider( Receivers\DataReceiverInterface $receiver )
 	{
 		$this->receiver = $receiver;
 
 		return $this;
 	}
 
-	public function setTemplate( TemplateInterface $template )
+	public function setTemplate( Templates\TemplateInterface $template )
 	{
 		$this->template = $template;
 

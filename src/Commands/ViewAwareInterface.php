@@ -2,12 +2,11 @@
 
 namespace WCM\AstroFields\Core\Commands;
 
-use WCM\AstroFields\Core\Templates\TemplateInterface;
-use WCM\AstroFields\Core\Receivers\DataReceiverInterface;
+use WCM\AstroFields\Core;
 
 interface ViewAwareInterface
 {
-	public function setProvider( DataReceiverInterface $receiver );
+	public function setProvider( Core\Receivers\DataReceiverInterface $receiver );
 
-	public function setTemplate( TemplateInterface $template );
+	public function setTemplate( Core\Templates\TemplateInterface $template );
 }
