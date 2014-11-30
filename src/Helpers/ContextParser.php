@@ -23,6 +23,8 @@ class ContextParser implements ParserInterface
 	 */
 	public function setup( Array $input, $context )
 	{
+		# $input = array_map( 'strtolower', $input );
+		# $input = array_change_key_case( $input, CASE_LOWER );
 		$this->input   = array_filter( $input );
 		$this->context = $context;
 	}
@@ -32,10 +34,10 @@ class ContextParser implements ParserInterface
 	 */
 	public function getResult()
 	{
-		return $this->map(
+		return array_values( $this->map(
 			$this->cartesian( $this->input ),
 			$this->context
-		);
+		) );
 	}
 
 	/**
