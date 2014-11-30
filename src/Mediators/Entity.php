@@ -89,8 +89,8 @@ class Entity implements \SplSubject
 	 * Note: If the context is empty, but ContextAwareInterface implemented,
 	 * the context was deliberately emptied to allow manual triggering from
 	 * i.e. a Meta Box, an users profile, a custom form, etc.
-	 * @param \SplObserver $command
-	 * @param array        $info
+	 * @param \SplObserver | ContextAwareInterface $command
+	 * @param array                                $info
 	 * @return $this
 	 */
 	public function attach( \SplObserver $command, Array $info = array() )
@@ -100,10 +100,7 @@ class Entity implements \SplSubject
 			'types' => $this->getTypes(),
 		);
 
-		if (
-			$command instanceof ContextAwareInterface
-			AND '' !== $command->getContext()
-			)
+		if ( $this->isDispatchable( $command ) )
 		{
 			// Build the context by replacing {placeholders}
 			$command->setContext( $this->parseContext(
@@ -122,6 +119,24 @@ class Entity implements \SplSubject
 	}
 
 	/**
+	 * Can the command get dispatched?
+	 * Dispatching means attaching it to a hook or filter.
+	 * This is only possible if the Command implements
+	 * the ContextAwareInterface methods and getContext()
+	 * actually returns something. A commands context can
+	 * get emptied before it gets attached to remove it
+	 * from the stack of delayed/hooked command storage.
+	 * @param \SplObserver $command
+	 * @return bool
+	 */
+	public function isDispatchable( \SplObserver $command )
+	{
+		return
+			$command instanceof ContextAwareInterface
+			AND '' !== $command->getContext();
+	}
+
+	/**
 	 * Attach placeholders for the context
 	 * @param array $proxy
 	 * @return $this
@@ -137,9 +152,9 @@ class Entity implements \SplSubject
 	 * Build the context (hooks/filters) array
 	 * When a context is provided when attaching a Command,
 	 * you can use `{key}`, `{type}` and `{proxy}` as placeholder.
-	 * @param  string $context
-	 * @param  array  $info
-	 * @return array
+	 * @param  string $context Retrieved from a Command
+	 * @param  array  $info key/value storage of placeholders
+	 * @return array The parsed/possible contexts
 	 */
 	protected function parseContext( $context, Array $info = array() )
 	{
