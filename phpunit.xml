@@ -1,0 +1,21 @@
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.3/phpunit.xsd"
+	bootstrap="src/Test/Bootstrap.php"
+	colors="false"
+	verbose="true"
+	backupGlobals="true"
+	processIsolation="false"
+	stopOnError="false"
+	stopOnFailure="false"
+	stopOnIncomplete="false"
+	stopOnSkipped="false"
+	strict="false">
+
+	<testsuites>
+		<testsuite name="AstroTest Core">
+			<directory phpVersion="5.3.2" phpVersionOperator=">=">./src/Test</directory>
+		</testsuite>
+	</testsuites>
+
+</phpunit>
