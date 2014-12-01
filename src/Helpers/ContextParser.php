@@ -18,6 +18,12 @@ class ContextParser implements ParserInterface
 	private $context;
 
 	/**
+	 * Temporary storage for nested `array_reduce()` in `zip()`
+	 * @type Array
+	 */
+	private $tmp;
+
+	/**
 	 * Attach input and context to the properties
 	 * Filters out/Removes empty values from the input
 	 * @codeCoverageIgnore
@@ -68,15 +74,15 @@ class ContextParser implements ParserInterface
 
 	/**
 	 * @codeCoverageIgnore
-	 * @param array $array
+	 * @param array $input
 	 * @return array
 	 */
-	protected function cartesian( Array $array )
+	protected function cartesian( Array $input )
 	{
-		$keys    = array_keys( $array );
-		$product = array_shift( $array );
+		$keys    = array_keys( $input );
+		$product = array_shift( $input );
 		$product = array_reduce(
-			$array,
+			$input,
 			array( $this, 'zip' ),
 			$product
 		);
@@ -92,20 +98,40 @@ class ContextParser implements ParserInterface
 
 	/**
 	 * @codeCoverageIgnore
-	 * @param array $array1
-	 * @param array $array2
+	 * @param array $input
+	 * @param array $product
 	 * @return mixed
 	 */
-	protected function zip( Array $array1, Array $array2 )
+	protected function zip( Array $input, Array $product )
 	{
-		$parser = $this;
-		return array_reduce( $array1, function( $value, $key ) use ( $array2, $parser )
+		$this->tmp = $product;
+		return array_reduce(
+			$input,
+			array( $this, 'reduce' ),
+			$product
+		);
+		/*$parser = $this;
+		return array_reduce( $input, function( $carry, $item ) use ( $product, $parser )
 		{
 			return array_merge(
-				$value,
-				$parser->inject( $key, $array2 )
+				$carry,
+				$parser->inject( $item, $product )
 			);
-		} );
+		}, array() );*/
+	}
+
+	/**
+	 * @codeCoverageIgnore
+	 * @param $carry
+	 * @param $item
+	 * @return array
+	 */
+	protected function reduce( $carry, $item )
+	{
+		return array_merge(
+			$carry,
+			$this->inject( $item, $this->tmp )
+		);
 	}
 
 	/**
