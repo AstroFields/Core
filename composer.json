@@ -1,18 +1,25 @@
 {
     "name"        : "wecodemore/astrofields-core",
-    "version"     : "0.1.0",
-    "description" : "A PHP Pattern Library for Fields, Forms and other User Input",
-    "keywords"    : [ "wordpress", "forms", "fields" ],
+    "description" : "A PHP Pattern Library for Fields, Forms and other User provided Input",
+    "type"        : "library",
+    "keywords"    : [ "wordpress", "forms", "fields", "astrofields" ],
     "homepage"    : "https://github.com/AstroFields/Core",
     "license"     : "MIT",
     "authors"     : [
         {
-            "name"  : "Kaiser Franz Josef",
-            "email" : "wecodemore@gmail.com"
+            "name"     : "Kaiser Franz Josef",
+            "email"    : "wecodemore@gmail.com",
+            "homepage" : "http://unserkaiser.com",
+            "role"     : "Lead Developer"
         }
     ],
     "support"     : {
-        "issues" : "https://github.com/AstroFields/Core/issues"
+        "issues" : "https://github.com/AstroFields/Core/issues",
+        "forum"  : "http://stackoverflow.com/questions/tagged/astrofields",
+        "source" : "https://github.com/AstroFields/Core/releases",
+        "wiki"   : "http://astrofields.com/docs",
+        "irc"    : "https://astrofields.slack.com/messages/astrofields",
+        "email"  : "hi.astronauts@gmail.com"
     },
     "minimum-stability" : "dev",
     "require"     : {
@@ -20,7 +27,8 @@
         "composer/installers" : "~1.0"
     },
     "require-dev" : {
-        "phpunit/phpunit" : "4.3.*"
+        "phpunit/phpunit"               : "4.3.*",
+        "codeclimate/php-test-reporter" : "dev-master"
     },
     "autoload"    : {
         "psr-4" : {
@@ -28,6 +36,7 @@
         }
     },
     "config": {
-        "bin-dir": "bin"
+        "bin-dir"             : "bin",
+        "optimize-autoloader" : true
     }
 }
