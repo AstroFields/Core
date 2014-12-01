@@ -89,6 +89,7 @@ class Entity implements \SplSubject
 	 * Note: If the context is empty, but ContextAwareInterface implemented,
 	 * the context was deliberately emptied to allow manual triggering from
 	 * i.e. a Meta Box, an users profile, a custom form, etc.
+	 * @codeCoverageIgnore
 	 * @param \SplObserver | ContextAwareInterface $command
 	 * @param array                                $info
 	 * @return $this
@@ -254,6 +255,7 @@ class Entity implements \SplSubject
 	 * $subject = $this Alias:
 	 * PHP 5.3 fix, as Closures don't know where to point $this prior to 5.4
 	 * props Malte "s1lv3r" Witt
+	 * @codeCoverageIgnore
 	 */
 	public function notify()
 	{
@@ -275,6 +277,7 @@ class Entity implements \SplSubject
 	 * PHP 5.3 fix, as Closures don't know where to point $this prior to 5.4
 	 * props Malte "s1lv3r" Witt
 	 * @link https://wiki.php.net/rfc/closures/object-extension
+	 * @codeCoverageIgnore
 	 * @param \SplObserver|ContextAwareInterface $command
 	 * @param array                              $data
 	 */
@@ -285,6 +288,7 @@ class Entity implements \SplSubject
 
 		foreach ( $contexts as $context )
 		{
+			# @codeCoverageIgnore
 			add_filter( $context, function() use ( $subject, $command, $data, $context )
 			{
 				// Provide all filter arguments to the Command as `args` Array

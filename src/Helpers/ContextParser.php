@@ -18,6 +18,9 @@ class ContextParser implements ParserInterface
 	private $context;
 
 	/**
+	 * Attach input and context to the properties
+	 * Filters out/Removes empty values from the input
+	 * @codeCoverageIgnore
 	 * @param array  $input
 	 * @param string $context
 	 */
@@ -30,6 +33,8 @@ class ContextParser implements ParserInterface
 	}
 
 	/**
+	 * Return the parsed context array
+	 * Array keys (numerical) get sorted
 	 * @return array
 	 */
 	public function getResult()
@@ -41,6 +46,7 @@ class ContextParser implements ParserInterface
 	}
 
 	/**
+	 * @codeCoverageIgnore
 	 * @param array  $product
 	 * @param string $context
 	 * @return array
@@ -61,6 +67,7 @@ class ContextParser implements ParserInterface
 	}
 
 	/**
+	 * @codeCoverageIgnore
 	 * @param array $array
 	 * @return array
 	 */
@@ -84,6 +91,7 @@ class ContextParser implements ParserInterface
 	}
 
 	/**
+	 * @codeCoverageIgnore
 	 * @param array $array1
 	 * @param array $array2
 	 * @return mixed
@@ -101,6 +109,7 @@ class ContextParser implements ParserInterface
 	}
 
 	/**
+	 * @codeCoverageIgnore
 	 * @param string $element
 	 * @param array  $array
 	 * @return array
