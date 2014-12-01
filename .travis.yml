@@ -11,4 +11,7 @@ branches:
     - master
     - stable
 
-composer install
+before_script:
+  - wget http://getcomposer.org/composer.phar
+  - php composer.phar install
+  - phpunit
