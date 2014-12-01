@@ -1,4 +1,5 @@
 /.idea
 /vendor
 /bin
+/reports
 /node_modules
