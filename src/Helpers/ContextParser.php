@@ -105,7 +105,7 @@ class ContextParser implements ParserInterface
 				$value,
 				$parser->inject( $key, $array2 )
 			);
-		}, array() );
+		} );
 	}
 
 	/**
