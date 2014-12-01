@@ -95,10 +95,7 @@ class Entity implements \SplSubject
 	 */
 	public function attach( \SplObserver $command, Array $info = array() )
 	{
-		$data = $info + array(
-			'key'   => $this->getKey(),
-			'types' => $this->getTypes(),
-		);
+		$data = $this->getCombinedData( $info );
 
 		if ( $this->isDispatchable( $command ) )
 		{
@@ -116,6 +113,19 @@ class Entity implements \SplSubject
 		$this->commands->attach( $command, $data );
 
 		return $this;
+	}
+
+	/**
+	 *
+	 * @param array $info
+	 * @return array
+	 */
+	public function getCombinedData( Array $info = array() )
+	{
+		return $info + array(
+			'key'   => $this->getKey(),
+			'types' => $this->getTypes(),
+		);
 	}
 
 	/**
@@ -137,7 +147,8 @@ class Entity implements \SplSubject
 	}
 
 	/**
-	 * Attach placeholders for the context
+	 * Attach {proxy} placeholders, usable in the `context`
+	 * similar to {key} and {type}
 	 * @param array $proxy
 	 * @return $this
 	 */
@@ -149,6 +160,28 @@ class Entity implements \SplSubject
 	}
 
 	/**
+	 * Retrieve the {proxy} values
+	 * Allow passing the {proxy} as part of the data/info Array
+	 * to set it during initial setup of the Entity.
+	 * Does not allow overwriting the {proxy} when it already is set.
+	 * If there is demand to set the {proxy} on the fly,
+	 * use the `setProxy()` method.
+	 * @param array $info Optional
+	 * @return Array
+	 */
+	public function getProxy( Array $info = array() )
+	{
+		// Use the setter
+		if (
+			empty( $this->proxy )
+			AND isset( $info['proxy'] )
+		)
+			$this->setProxy( $info['proxy'] );
+
+		return $this->proxy;
+	}
+
+	/**
 	 * Build the context (hooks/filters) array
 	 * When a context is provided when attaching a Command,
 	 * you can use `{key}`, `{type}` and `{proxy}` as placeholder.
@@ -156,27 +189,35 @@ class Entity implements \SplSubject
 	 * @param  array  $info key/value storage of placeholders
 	 * @return array The parsed/possible contexts
 	 */
-	protected function parseContext( $context, Array $info = array() )
+	public function parseContext( $context, Array $info = array() )
 	{
 		// Allow passing the {proxy} as part of the data/info Array
 		// Use the method to use type hinting in case it's no Array.
-		if (
-			empty( $this->proxy )
-			AND isset( $info['proxy'] )
-		)
-			$this->setProxy( $info['proxy'] );
-
-		$input = array(
-			'{key}'   => array( $this->getKey() ),
-			'{type}'  => $this->getTypes(),
-			'{proxy}' => $this->proxy,
-		);
+		$this->getProxy( $info );
 
 		// @TODO Allow exchanging the parser
 		$parser = new ContextParser;
-		$parser->setup( $input, $context );
+
+		$parser->setup(
+			$this->getContextContainer(),
+			$context
+		);
 
 		return $parser->getResult();
+	}
+
+	/**
+	 * Retrieve the container of all context, ready to get parsed
+	 * into filter or action names used to attach callbacks.
+	 * @return array
+	 */
+	public function getContextContainer()
+	{
+		return array(
+			'{key}'   => array( $this->getKey() ),
+			'{type}'  => $this->getTypes(),
+			'{proxy}' => $this->getProxy(),
+		);
 	}
 
 	/**
