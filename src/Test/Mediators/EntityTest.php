@@ -269,17 +269,15 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 		/** @var ContextAwareInterface $command */
 		$command = $this->getMockCommandWithContext();
 
-		$result = $entity->parseContext(
+		$results = $entity->parseContext(
 			$command->getContext(),
 			$entity->getCombinedData( $info )
 		);
 
-		$this->assertInternalType( 'array', $result );
+		$this->assertInternalType( 'array', $results );
 
-		array_map( function( $r )
-		{
-			$this->assertRegExp( '/^([_a-z\{\}]*+)$/i', $r );
-		}, $result );
+		foreach ( $results as $result )
+			$this->assertRegExp( '/^([_a-z\{\}]*+)$/i', $result );
 	}
 
 	/**
