@@ -11,6 +11,8 @@ branches:
 before_script:
   - composer install
   - phpunit
+after_script:
+  - bin/test-reporter
 notifications:
   slack:
     secure: SIafjJiUuxlAH4kIZTR7XYIwEc2G2mQFbdnEwatKl5dZThOJw/cdtsyN4X91gya0e+fUfYo6tUtcm1e7r8xBQszjcEoqOVtt/Nnv+eKeV98wEErGhIVGvc2J1KOalZen5l6M4WnLBwH7ZAOeI/OHHOpFxFDbRvjof6yEcZjC4lk=
