@@ -86,7 +86,6 @@ class ContextParser implements ParserInterface
 			array( $this, 'zip' ),
 			$product
 		);
-
 		return array_map( function( $n ) use ( $keys )
 		{
 			return array_combine(
@@ -104,20 +103,16 @@ class ContextParser implements ParserInterface
 	 */
 	protected function zip( Array $input, Array $product )
 	{
-		$this->tmp = $product;
-		return array_reduce(
-			$input,
-			array( $this, 'reduce' ),
-			$product
-		);
-		/*$parser = $this;
+		// PHP 5.3 fix
+		$parser = $this;
+
 		return array_reduce( $input, function( $carry, $item ) use ( $product, $parser )
 		{
 			return array_merge(
 				$carry,
 				$parser->inject( $item, $product )
 			);
-		}, array() );*/
+		}, array() );
 	}
 
 	/**
@@ -140,7 +135,7 @@ class ContextParser implements ParserInterface
 	 * @param array  $array
 	 * @return array
 	 */
-	protected function inject( $element, Array $array )
+	public function inject( $element, Array $array )
 	{
 		return array_map( function( $n ) use ( $element )
 		{
