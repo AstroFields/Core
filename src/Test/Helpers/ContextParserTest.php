@@ -13,30 +13,37 @@ class ContextParserTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers ContextParser::setup()
-	 * @dataProvider getTestContext()
+	 * @covers \WCM\AstroFields\Core\Helpers\ContextParser::setup()
+	 * @dataProvider getSampleData()
 	 */
-	public function testSetup( $context, Array $input, $expected )
+	public function testSetupInputValueTypes( $context, Array $input, $expected )
 	{
 		$this->assertInternalType( 'array', $input );
 		$this->assertInternalType( 'string', $context );
+		$this->assertRegExp( '/^([_a-z\{\}]*+)$/i', $context );
 	}
 
 	/**
-	 * @covers ContextParser::getResult()
-	 * @dataProvider getTestContext()
+	 * @covers \WCM\AstroFields\Core\Helpers\ContextParser::getResult()
+	 * @dataProvider getSampleData()
 	 */
-	public function testResult( $context, Array $input, $expected )
+	public function testResultTypeIsArray( $context, Array $input, $expected )
 	{
 		$this->parser->setup( $input, $context );
-
-		$result = $this->parser->getResult();
-
-		$this->assertInternalType( 'array', $result );
-		$this->assertEquals( $result, $expected );
+		$this->assertInternalType( 'array', $this->parser->getResult() );
 	}
 
-	public function getTestContext()
+	/**
+	 * @covers \WCM\AstroFields\Core\Helpers\ContextParser::getResult()
+	 * @dataProvider getSampleData()
+	 */
+	public function testResultArrayEqualsExpectedArray( $context, Array $input, $expected )
+	{
+		$this->parser->setup( $input, $context );
+		$this->assertEquals( $this->parser->getResult(), $expected );
+	}
+
+	public function getSampleData()
 	{
 		return array(
 			array(
