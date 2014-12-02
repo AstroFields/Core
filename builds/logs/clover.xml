@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1417543850">
-  <project timestamp="1417543850">
+<coverage generated="1417555082">
+  <project timestamp="1417555082">
     <package name="WCM\AstroFields\Core\Helpers">
       <file name="C:\projects\AstroFields\wp-content\vendor\wecodemore\astrofields-core\src/Helpers/ContextParser.php">
         <class name="ContextParser" namespace="WCM\AstroFields\Core\Helpers" fullPackage="WCM" package="WCM">
@@ -41,48 +41,48 @@
         <line num="79" type="stmt" count="1"/>
         <line num="84" type="method" name="getTypes" crap="1" count="5"/>
         <line num="86" type="stmt" count="5"/>
-        <line num="145" type="method" name="getCombinedData" crap="3.24" count="2"/>
-        <line num="148" type="stmt" count="2"/>
-        <line num="149" type="stmt" count="2"/>
-        <line num="150" type="stmt" count="2"/>
-        <line num="151" type="stmt" count="2"/>
-        <line num="152" type="stmt" count="0"/>
-        <line num="153" type="stmt" count="0"/>
-        <line num="154" type="stmt" count="0"/>
-        <line num="157" type="stmt" count="2"/>
-        <line num="158" type="stmt" count="2"/>
-        <line num="159" type="stmt" count="2"/>
-        <line num="173" type="method" name="isDispatchable" crap="2" count="1"/>
-        <line num="177" type="stmt" count="1"/>
-        <line num="186" type="method" name="setProxy" crap="1" count="1"/>
-        <line num="188" type="stmt" count="1"/>
-        <line num="190" type="stmt" count="1"/>
-        <line num="203" type="method" name="getProxy" crap="3" count="3"/>
+        <line num="140" type="method" name="getCombinedData" crap="3.24" count="2"/>
+        <line num="143" type="stmt" count="2"/>
+        <line num="144" type="stmt" count="2"/>
+        <line num="145" type="stmt" count="2"/>
+        <line num="146" type="stmt" count="2"/>
+        <line num="147" type="stmt" count="0"/>
+        <line num="148" type="stmt" count="0"/>
+        <line num="149" type="stmt" count="0"/>
+        <line num="152" type="stmt" count="2"/>
+        <line num="153" type="stmt" count="2"/>
+        <line num="154" type="stmt" count="2"/>
+        <line num="168" type="method" name="isDispatchable" crap="2" count="1"/>
+        <line num="172" type="stmt" count="1"/>
+        <line num="181" type="method" name="setProxy" crap="1" count="1"/>
+        <line num="183" type="stmt" count="1"/>
+        <line num="185" type="stmt" count="1"/>
+        <line num="198" type="method" name="getProxy" crap="3" count="3"/>
+        <line num="202" type="stmt" count="3"/>
+        <line num="203" type="stmt" count="3"/>
+        <line num="204" type="stmt" count="2"/>
+        <line num="205" type="stmt" count="3"/>
         <line num="207" type="stmt" count="3"/>
-        <line num="208" type="stmt" count="3"/>
-        <line num="209" type="stmt" count="2"/>
-        <line num="210" type="stmt" count="3"/>
-        <line num="212" type="stmt" count="3"/>
-        <line num="223" type="method" name="parseContext" crap="1" count="1"/>
+        <line num="218" type="method" name="parseContext" crap="1" count="1"/>
+        <line num="222" type="stmt" count="1"/>
+        <line num="225" type="stmt" count="1"/>
         <line num="227" type="stmt" count="1"/>
+        <line num="228" type="stmt" count="1"/>
         <line num="230" type="stmt" count="1"/>
         <line num="232" type="stmt" count="1"/>
-        <line num="233" type="stmt" count="1"/>
-        <line num="235" type="stmt" count="1"/>
-        <line num="237" type="stmt" count="1"/>
-        <line num="245" type="method" name="getContextContainer" crap="1" count="1"/>
-        <line num="248" type="stmt" count="1"/>
-        <line num="249" type="stmt" count="1"/>
-        <line num="250" type="stmt" count="1"/>
-        <line num="251" type="stmt" count="1"/>
-        <line num="259" type="method" name="detach" crap="1" count="1"/>
-        <line num="261" type="stmt" count="1"/>
-        <line num="263" type="stmt" count="1"/>
-        <line num="271" type="method" name="getCommands" crap="1" count="2"/>
-        <line num="273" type="stmt" count="2"/>
-        <line num="274" type="stmt" count="2"/>
-        <line num="276" type="stmt" count="2"/>
-        <metrics loc="332" ncloc="175" classes="1" methods="14" coveredmethods="13" conditionals="0" coveredconditionals="0" statements="49" coveredstatements="46" elements="63" coveredelements="59"/>
+        <line num="240" type="method" name="getContextContainer" crap="1" count="1"/>
+        <line num="243" type="stmt" count="1"/>
+        <line num="244" type="stmt" count="1"/>
+        <line num="245" type="stmt" count="1"/>
+        <line num="246" type="stmt" count="1"/>
+        <line num="254" type="method" name="detach" crap="1" count="1"/>
+        <line num="256" type="stmt" count="1"/>
+        <line num="258" type="stmt" count="1"/>
+        <line num="266" type="method" name="getCommands" crap="1" count="2"/>
+        <line num="268" type="stmt" count="2"/>
+        <line num="269" type="stmt" count="2"/>
+        <line num="271" type="stmt" count="2"/>
+        <metrics loc="327" ncloc="178" classes="1" methods="14" coveredmethods="13" conditionals="0" coveredconditionals="0" statements="49" coveredstatements="46" elements="63" coveredelements="59"/>
       </file>
     </package>
     <package name="WCM\AstroFields\Core\Models">
@@ -144,6 +144,6 @@
         <metrics loc="122" ncloc="91" classes="1" methods="8" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="43" coveredstatements="0" elements="51" coveredelements="0"/>
       </file>
     </package>
-    <metrics files="3" loc="601" ncloc="353" classes="3" methods="23" coveredmethods="14" conditionals="0" coveredconditionals="0" statements="96" coveredstatements="50" elements="119" coveredelements="64"/>
+    <metrics files="3" loc="596" ncloc="356" classes="3" methods="23" coveredmethods="14" conditionals="0" coveredconditionals="0" statements="96" coveredstatements="50" elements="119" coveredelements="64"/>
   </project>
 </coverage>

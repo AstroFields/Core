@@ -1,22 +1,32 @@
 language: php
+
 php:
   - 5.3
   - 5.4
   - 5.5
   - 5.6
+
 branches:
   only:
   - master
   - stable
+
 before_script:
-  - composer install
-  - phpunit
+  - composer --dev install
+  - mkdir -p builds/logs
+
+script:
+  - bin/phpunit --coverage-clover builds/logs/clover.xml
+
 after_script:
-  - bin/test-reporter
+  - CODECLIMATE_REPO_TOKEN="NfnpFNp7m1rA2evbFGbyZjXCq/fyaxYj+/WP5wgfcWKg4CGxJWQiLjs74kEB7DFvpu6IHExaFMiTs0k8jFQqN2jAEeWvi/Yv9gcVpZpUoBfZjf8QGOK8wCT7tZCXAu/WvaxD2x0DB7c9hiLp+Tx1sroZwy4si6xtMstvR7jC274=" bin/test-reporter --stdout > codeclimate.json
+  - "curl -X POST -d @codeclimate.json -H 'Content-Type: application/json' -H 'User-Agent: Code Climate (PHP Test Reporter v0.1.1)' https://codeclimate.com/test_reports"
+
 addons:
   code_climate:
     repo_token:
       secure: "NfnpFNp7m1rA2evbFGbyZjXCq/fyaxYj+/WP5wgfcWKg4CGxJWQiLjs74kEB7DFvpu6IHExaFMiTs0k8jFQqN2jAEeWvi/Yv9gcVpZpUoBfZjf8QGOK8wCT7tZCXAu/WvaxD2x0DB7c9hiLp+Tx1sroZwy4si6xtMstvR7jC274="
+
 notifications:
   slack:
     secure: SIafjJiUuxlAH4kIZTR7XYIwEc2G2mQFbdnEwatKl5dZThOJw/cdtsyN4X91gya0e+fUfYo6tUtcm1e7r8xBQszjcEoqOVtt/Nnv+eKeV98wEErGhIVGvc2J1KOalZen5l6M4WnLBwH7ZAOeI/OHHOpFxFDbRvjof6yEcZjC4lk=
