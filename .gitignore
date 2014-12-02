@@ -1,4 +1,11 @@
+# IDEs
 /.idea
+
+# Package/Dependency Managers
 /vendor
 /bin
 /node_modules
+
+# Code Quality & Tests
+/builds/logs/clover.xml
+code_climate.json
