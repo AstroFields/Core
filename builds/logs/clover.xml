@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1417543850">
+  <project timestamp="1417543850">
+    <package name="WCM\AstroFields\Core\Helpers">
+      <file name="C:\projects\AstroFields\wp-content\vendor\wecodemore\astrofields-core\src/Helpers/ContextParser.php">
+        <class name="ContextParser" namespace="WCM\AstroFields\Core\Helpers" fullPackage="WCM" package="WCM">
+          <metrics methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="4" coveredstatements="4" elements="5" coveredelements="5"/>
+        </class>
+        <line num="46" type="method" name="getResult" crap="1" count="6"/>
+        <line num="48" type="stmt" count="6"/>
+        <line num="49" type="stmt" count="6"/>
+        <line num="50" type="stmt" count="6"/>
+        <line num="51" type="stmt" count="6"/>
+        <metrics loc="147" ncloc="87" classes="1" methods="1" coveredmethods="1" conditionals="0" coveredconditionals="0" statements="4" coveredstatements="4" elements="5" coveredelements="5"/>
+      </file>
+    </package>
+    <package name="WCM\AstroFields\Core\Mediators">
+      <file name="C:\projects\AstroFields\wp-content\vendor\wecodemore\astrofields-core\src/Mediators/Entity.php">
+        <class name="Entity" namespace="WCM\AstroFields\Core\Mediators">
+          <metrics methods="14" coveredmethods="13" conditionals="0" coveredconditionals="0" statements="49" coveredstatements="46" elements="63" coveredelements="59"/>
+        </class>
+        <line num="27" type="method" name="__construct" crap="1" count="14"/>
+        <line num="29" type="stmt" count="14"/>
+        <line num="30" type="stmt" count="14"/>
+        <line num="32" type="stmt" count="14"/>
+        <line num="34" type="stmt" count="14"/>
+        <line num="39" type="method" name="getKey" crap="1" count="3"/>
+        <line num="41" type="stmt" count="3"/>
+        <line num="49" type="method" name="setKey" crap="2" count="2"/>
+        <line num="51" type="stmt" count="2"/>
+        <line num="52" type="stmt" count="2"/>
+        <line num="54" type="stmt" count="1"/>
+        <line num="55" type="stmt" count="1"/>
+        <line num="63" type="method" name="setTypes" crap="2" count="2"/>
+        <line num="65" type="stmt" count="2"/>
+        <line num="66" type="stmt" count="2"/>
+        <line num="68" type="stmt" count="1"/>
+        <line num="69" type="stmt" count="1"/>
+        <line num="76" type="method" name="addType" crap="1" count="1"/>
+        <line num="78" type="stmt" count="1"/>
+        <line num="79" type="stmt" count="1"/>
+        <line num="84" type="method" name="getTypes" crap="1" count="5"/>
+        <line num="86" type="stmt" count="5"/>
+        <line num="145" type="method" name="getCombinedData" crap="3.24" count="2"/>
+        <line num="148" type="stmt" count="2"/>
+        <line num="149" type="stmt" count="2"/>
+        <line num="150" type="stmt" count="2"/>
+        <line num="151" type="stmt" count="2"/>
+        <line num="152" type="stmt" count="0"/>
+        <line num="153" type="stmt" count="0"/>
+        <line num="154" type="stmt" count="0"/>
+        <line num="157" type="stmt" count="2"/>
+        <line num="158" type="stmt" count="2"/>
+        <line num="159" type="stmt" count="2"/>
+        <line num="173" type="method" name="isDispatchable" crap="2" count="1"/>
+        <line num="177" type="stmt" count="1"/>
+        <line num="186" type="method" name="setProxy" crap="1" count="1"/>
+        <line num="188" type="stmt" count="1"/>
+        <line num="190" type="stmt" count="1"/>
+        <line num="203" type="method" name="getProxy" crap="3" count="3"/>
+        <line num="207" type="stmt" count="3"/>
+        <line num="208" type="stmt" count="3"/>
+        <line num="209" type="stmt" count="2"/>
+        <line num="210" type="stmt" count="3"/>
+        <line num="212" type="stmt" count="3"/>
+        <line num="223" type="method" name="parseContext" crap="1" count="1"/>
+        <line num="227" type="stmt" count="1"/>
+        <line num="230" type="stmt" count="1"/>
+        <line num="232" type="stmt" count="1"/>
+        <line num="233" type="stmt" count="1"/>
+        <line num="235" type="stmt" count="1"/>
+        <line num="237" type="stmt" count="1"/>
+        <line num="245" type="method" name="getContextContainer" crap="1" count="1"/>
+        <line num="248" type="stmt" count="1"/>
+        <line num="249" type="stmt" count="1"/>
+        <line num="250" type="stmt" count="1"/>
+        <line num="251" type="stmt" count="1"/>
+        <line num="259" type="method" name="detach" crap="1" count="1"/>
+        <line num="261" type="stmt" count="1"/>
+        <line num="263" type="stmt" count="1"/>
+        <line num="271" type="method" name="getCommands" crap="1" count="2"/>
+        <line num="273" type="stmt" count="2"/>
+        <line num="274" type="stmt" count="2"/>
+        <line num="276" type="stmt" count="2"/>
+        <metrics loc="332" ncloc="175" classes="1" methods="14" coveredmethods="13" conditionals="0" coveredconditionals="0" statements="49" coveredstatements="46" elements="63" coveredelements="59"/>
+      </file>
+    </package>
+    <package name="WCM\AstroFields\Core\Models">
+      <file name="C:\projects\AstroFields\wp-content\vendor\wecodemore\astrofields-core\src/Models/EntityStorage.php">
+        <class name="EntityStorage" namespace="WCM\AstroFields\Core\Models">
+          <metrics methods="8" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="43" coveredstatements="0" elements="51" coveredelements="0"/>
+        </class>
+        <line num="15" type="method" name="attach" crap="6" count="0"/>
+        <line num="17" type="stmt" count="0"/>
+        <line num="19" type="stmt" count="0"/>
+        <line num="20" type="stmt" count="0"/>
+        <line num="22" type="stmt" count="0"/>
+        <line num="23" type="stmt" count="0"/>
+        <line num="24" type="stmt" count="0"/>
+        <line num="26" type="stmt" count="0"/>
+        <line num="27" type="stmt" count="0"/>
+        <line num="35" type="method" name="isValid" crap="6" count="0"/>
+        <line num="37" type="stmt" count="0"/>
+        <line num="38" type="stmt" count="0"/>
+        <line num="39" type="stmt" count="0"/>
+        <line num="40" type="stmt" count="0"/>
+        <line num="41" type="stmt" count="0"/>
+        <line num="42" type="stmt" count="0"/>
+        <line num="43" type="stmt" count="0"/>
+        <line num="50" type="method" name="hasContext" crap="2" count="0"/>
+        <line num="52" type="stmt" count="0"/>
+        <line num="53" type="stmt" count="0"/>
+        <line num="55" type="stmt" count="0"/>
+        <line num="62" type="method" name="getInfo" crap="6" count="0"/>
+        <line num="64" type="stmt" count="0"/>
+        <line num="65" type="stmt" count="0"/>
+        <line num="67" type="stmt" count="0"/>
+        <line num="68" type="stmt" count="0"/>
+        <line num="70" type="stmt" count="0"/>
+        <line num="77" type="method" name="getContext" crap="6" count="0"/>
+        <line num="79" type="stmt" count="0"/>
+        <line num="80" type="stmt" count="0"/>
+        <line num="82" type="stmt" count="0"/>
+        <line num="83" type="stmt" count="0"/>
+        <line num="84" type="stmt" count="0"/>
+        <line num="93" type="method" name="offsetGet" crap="12" count="0"/>
+        <line num="95" type="stmt" count="0"/>
+        <line num="96" type="stmt" count="0"/>
+        <line num="97" type="stmt" count="0"/>
+        <line num="98" type="stmt" count="0"/>
+        <line num="99" type="stmt" count="0"/>
+        <line num="100" type="stmt" count="0"/>
+        <line num="102" type="stmt" count="0"/>
+        <line num="103" type="stmt" count="0"/>
+        <line num="104" type="stmt" count="0"/>
+        <line num="106" type="stmt" count="0"/>
+        <line num="109" type="method" name="getItertor" crap="2" count="0"/>
+        <line num="111" type="stmt" count="0"/>
+        <line num="114" type="method" name="compare" crap="12" count="0"/>
+        <line num="116" type="stmt" count="0"/>
+        <line num="117" type="stmt" count="0"/>
+        <line num="120" type="stmt" count="0"/>
+        <line num="121" type="stmt" count="0"/>
+        <metrics loc="122" ncloc="91" classes="1" methods="8" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="43" coveredstatements="0" elements="51" coveredelements="0"/>
+      </file>
+    </package>
+    <metrics files="3" loc="601" ncloc="353" classes="3" methods="23" coveredmethods="14" conditionals="0" coveredconditionals="0" statements="96" coveredstatements="50" elements="119" coveredelements="64"/>
+  </project>
+</coverage>

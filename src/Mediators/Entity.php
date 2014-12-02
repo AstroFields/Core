@@ -4,6 +4,7 @@ namespace WCM\AstroFields\Core\Mediators;
 
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 use WCM\AstroFields\Core\Helpers\ContextParser;
+use WCM\AstroFields\Core\Models\EntityStorage;
 
 class Entity implements \SplSubject
 {
@@ -28,7 +29,8 @@ class Entity implements \SplSubject
 		$this->key   = $key;
 		$this->types = $types;
 
-		$this->commands = new \SplObjectstorage;
+		$this->commands = new EntityStorage;
+		#$this->commands = new \SplObjectstorage;
 	}
 
 	/**
@@ -61,7 +63,7 @@ class Entity implements \SplSubject
 	public function setTypes( Array $types )
 	{
 		if ( ! empty( $this->types ) )
-			throw new \LogicException( 'To add additional types, use `addType()`.' );
+			throw new \LogicException( 'To add additional types, use `addType()`' );
 
 		$this->types = $types;
 	}
@@ -98,13 +100,24 @@ class Entity implements \SplSubject
 	{
 		$data = $this->getCombinedData( $info );
 
+		#$this->commands->attach( $command, $data );
+		#var_dump( ' >> Info', $this->commands->getInfo() );
+		#var_dump( ' >> Context', $this->commands->getContext() );
+		#foreach ( $this->commands as $command )
+		#	var_dump( $this->commands->current() );
+
 		if ( $this->isDispatchable( $command ) )
 		{
-			// Build the context by replacing {placeholders}
-			$command->setContext( $this->parseContext(
-				$command->getContext(),
-				$data
-			) );
+			// Do not try to parse an already parsed context
+			// This is the case if the same command gets attached multiple times
+			if ( ! is_array( $command->getContext() ) )
+			{
+				// Build the context by replacing {placeholders} with real data
+				$command->setContext( $this->parseContext(
+					$command->getContext(),
+					$data
+				) );
+			}
 
 			$this->dispatch( $command, $data );
 
@@ -117,12 +130,24 @@ class Entity implements \SplSubject
 	}
 
 	/**
-	 *
-	 * @param array $info
+	 * Add custom data and append the key and types
+	 * This effectively overwrites manually set `key` and `types`
+	 * preventing errors from accidental abuse of those reserved keys.
+	 * @throws \UnexpectedValueException If reserved keys are used in the data array
+	 * @param array $info Optional
 	 * @return array
 	 */
 	public function getCombinedData( Array $info = array() )
 	{
+		if (
+			isset( $info['key'] )
+			OR isset( $info['types'] )
+		)
+			throw new \UnexpectedValueException( sprintf(
+				'%s: `key` and `types` are reserved keys',
+				get_class( $this )
+			) );
+
 		return $info + array(
 			'key'   => $this->getKey(),
 			'types' => $this->getTypes(),
@@ -172,7 +197,7 @@ class Entity implements \SplSubject
 	 */
 	public function getProxy( Array $info = array() )
 	{
-		// Use the setter
+		// Use the Setter
 		if (
 			empty( $this->proxy )
 			AND isset( $info['proxy'] )
@@ -193,7 +218,7 @@ class Entity implements \SplSubject
 	public function parseContext( $context, Array $info = array() )
 	{
 		// Allow passing the {proxy} as part of the data/info Array
-		// Use the method to use type hinting in case it's no Array.
+		// Utitlizes the Getter to use type hinting in case it's no Array.
 		$this->getProxy( $info );
 
 		// @TODO Allow exchanging the parser
@@ -229,10 +254,6 @@ class Entity implements \SplSubject
 	public function detach( \SplObserver $command )
 	{
 		$this->commands->detach( $command );
-
-		# @TODO Remove from filter callback stack
-		# foreach ( $command->getContext() as $c )
-		# remove_filter( $c, array( $command, 'update' ) );
 
 		return $this;
 	}
@@ -278,8 +299,8 @@ class Entity implements \SplSubject
 	 * props Malte "s1lv3r" Witt
 	 * @link https://wiki.php.net/rfc/closures/object-extension
 	 * @codeCoverageIgnore
-	 * @param \SplObserver|ContextAwareInterface $command
-	 * @param array                              $data
+	 * @param \SplObserver | ContextAwareInterface $command
+	 * @param array                                $data
 	 */
 	public function dispatch( ContextAwareInterface $command, Array $data )
 	{
@@ -298,7 +319,8 @@ class Entity implements \SplSubject
 					$subject,
 					$data
 				);
-				# return call_user_func_array( [ $command, 'update' ], func_get_args() );
+				# Less readable version:
+				# return call_user_func_array( array( $command, 'update' ), func_get_args() );
 
 			}, 10, PHP_INT_MAX -1 );
 		}

@@ -5,7 +5,10 @@ namespace WCM\AstroFields\Core\Commands;
 use WCM\AstroFields\Core\Receivers;
 use WCM\AstroFields\Core\Templates;
 
-class ViewCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
+class ViewCmd implements
+	\SplObserver,
+	ViewAwareInterface,
+	ContextAwareInterface
 {
 	/** @var string */
 	protected $context = '';
@@ -34,7 +37,7 @@ class ViewCmd implements \SplObserver, ViewAwareInterface, ContextAwareInterface
 		$this->receiver->setData( $data );
 		$this->template->attach( $this->receiver );
 
-		echo $this->template;
+		echo $this->template->display();
 	}
 
 	public function setProvider( Receivers\DataReceiverInterface $receiver )
