@@ -13,6 +13,10 @@ before_script:
   - phpunit
 after_script:
   - bin/test-reporter
+addons:
+  code_climate:
+    repo_token:
+      secure: "NfnpFNp7m1rA2evbFGbyZjXCq/fyaxYj+/WP5wgfcWKg4CGxJWQiLjs74kEB7DFvpu6IHExaFMiTs0k8jFQqN2jAEeWvi/Yv9gcVpZpUoBfZjf8QGOK8wCT7tZCXAu/WvaxD2x0DB7c9hiLp+Tx1sroZwy4si6xtMstvR7jC274="
 notifications:
   slack:
     secure: SIafjJiUuxlAH4kIZTR7XYIwEc2G2mQFbdnEwatKl5dZThOJw/cdtsyN4X91gya0e+fUfYo6tUtcm1e7r8xBQszjcEoqOVtt/Nnv+eKeV98wEErGhIVGvc2J1KOalZen5l6M4WnLBwH7ZAOeI/OHHOpFxFDbRvjof6yEcZjC4lk=
