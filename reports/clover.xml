@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1417555082">
-  <project timestamp="1417555082">
+<coverage generated="1417568917">
+  <project timestamp="1417568917">
     <package name="WCM\AstroFields\Core\Helpers">
       <file name="C:\projects\AstroFields\wp-content\vendor\wecodemore\astrofields-core\src/Helpers/ContextParser.php">
         <class name="ContextParser" namespace="WCM\AstroFields\Core\Helpers" fullPackage="WCM" package="WCM">
