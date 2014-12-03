@@ -7,5 +7,5 @@
 /node_modules
 
 # Code Quality & Tests
-/builds/logs/clover.xml
+/reports/clover.xml
 code_climate.json

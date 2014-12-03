@@ -18,7 +18,7 @@ before_script:
   - mkdir -p builds/logs
 
 script:
-  - bin/phpunit --coverage-clover builds/logs/clover.xml
+  - bin/phpunit --coverage-clover reports/clover.xml
 
 after_script:
   - bin/test-reporter --stdout > codeclimate.json

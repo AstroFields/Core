@@ -19,6 +19,6 @@
 	</testsuites>
 
 	<logging>
-		<log type="coverage-clover" target="builds/logs/clover.xml"/>
+		<log type="coverage-clover" target="reports/clover.xml"/>
 	</logging>
 </phpunit>
