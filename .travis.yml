@@ -21,7 +21,7 @@ script:
   - bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_script:
-  - bin/test-reporter --coverage-clover build/logs/clover.xml --stdout > codeclimate.json
+  - bin/test-reporter --coverage-report build/logs/clover.xml --stdout > codeclimate.json
   - "curl -X POST -d @codeclimate.json -H 'Content-Type: application/json' -H 'User-Agent: Code Climate (PHP Test Reporter v0.1.1)' https://codeclimate.com/test_reports"
 
 notifications:
