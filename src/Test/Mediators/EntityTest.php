@@ -3,12 +3,13 @@
 namespace WCM\AstroFields\Core\Test\Mediators;
 
 use WCM\AstroFields\Core\Mediators\Entity;
+use WCM\AstroFields\Core\Commands\CommandInterface;
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 
 class EntityTest extends \PHPUnit_Framework_TestCase
 {
 	/**
-	 * Tests if the key is of type `string`
+	 * Tests if the key is of type `string` and if the right key gets set
 	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
 	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getKey()
 	 * @dataProvider getEntityInputData()
@@ -21,292 +22,296 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 		$entity = new Entity( $key, $types );
 
 		$this->assertInternalType( 'string', $entity->getKey() );
+
+		$this->assertEquals( 'test', $entity->getKey() );
 	}
 
 	/**
-	 * Tests if overwriting the key throws an exception
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers       \WCM\AstroFields\Core\Mediators\Entity::setKey()
-	 * @dataProvider getEntityInputData()
-	 * @expectedException \LogicException
-	 * @param string $key
-	 * @param array  $types
-	 */
-	public function testSetKeyOverwritingException( $key = '', Array $types = array() )
-	{
-		/** @var Entity */
-		$entity = new Entity( $key, $types );
-
-		$entity->setKey( $key );
-	}
-
-	/**
-	 * Tests if the key is of type `string`
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::setKey()
-	 * @dataProvider getEntityInputData()
-	 * @param string $key
-	 * @param array  $types
-	 */
-	public function testSetKeyNotSetInConstructor( $key = '', Array $types = array() )
-	{
-		/** @var Entity */
-		$entity = new Entity( null, $types );
-
-		$this->assertNull( $entity->getKey() );
-
-		$entity->setKey( $key );
-		$this->assertNotEmpty( $entity->getKey() );
-		$this->assertInternalType( 'string', $entity->getKey() );
-
-	}
-
-	/**
-	 * Tests if the Command storage is actually a \SplObjectstorage
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getCommands()
-	 * @dataProvider getEntityInputData()
-	 * @param string $key
-	 * @param array  $types
-	 */
-	public function testCommandStorageContainerClass( $key = '', Array $types = array() )
-	{
-		/** @var Entity */
-		$entity = new Entity( $key, $types );
-
-		$this->assertInstanceOf( 'SplObjectstorage', $entity->getCommands() );
-	}
-
-	/**
-	 * Tests if the provided data is valid and of the correct type
-	 * and if the resulting types array is of the same length/size as the input data
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getTypes()
-	 * @dataProvider getEntityInputData()
-	 * @param string $key
-	 * @param array  $types
-	 */
-	public function testSetTypesTypeAndSize( $key = '', Array $types = array() )
-	{
-		/** @var Entity */
-		$entity = new Entity( $key, $types );
-
-		$this->assertInternalType( 'array', $entity->getTypes() );
-		$this->assertContainsOnly( 'string', $entity->getTypes() );
-		$this->assertSameSize( $types, $entity->getTypes() );
-	}
-
-	/**
-	 * Test if the class denies overwriting the set types and throws an \Exception
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::setTypes()
-	 * @dataProvider getEntityInputData()
-	 * @expectedException \LogicException
-	 * @param string $key
-	 * @param array  $types
-	 */
-	public function testSetTypesReturnedExceptionOnOverwrite( $key = '', Array $types = array() )
-	{
-		/** @var Entity */
-		$entity = new Entity( $key, $types );
-
-		$entity->setTypes( $types );
-	}
-
-	/**
-	 * Test if the class works with no types were set in the constructor,
-	 * but set later on using the public method.
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::setTypes()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getTypes()
-	 * @dataProvider getEntityInputData()
-	 * @param string $key
-	 * @param array  $types
-	 */
-	public function testSetTypesWhenNotSetInConstructor( $key = '', Array $types = array() )
-	{
-		/** @var Entity */
-		$entity = new Entity( $key );
-
-		$entity->setTypes( $types );
-		$this->assertNotEmpty( $entity->getTypes() );
-		$this->assertInternalType( 'array', $entity->getTypes() );
-		$this->assertSameSize( $types, $entity->getTypes() );
-	}
-
-	/**
-	 * Tests if the `addType()` function adds to the types stack
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getTypes()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::addType()
-	 * @dataProvider getEntityInputData()
-	 * @param string $key
-	 * @param array  $types
-	 */
-	public function testAddSingleTypeToAlreadySetTypes( $key = '', Array $types = array() )
-	{
-		/** @var Entity */
-		$entity = new Entity( $key, $types );
-
-		$this->assertSameSize( $types, $entity->getTypes() );
-
-		foreach ( $types as $type )
-			$entity->addType( $type );
-
-		$this->assertNotSameSize( $types, $entity->getTypes() );
-	}
-
-	/**
-	 * Tests if attaching a `\SplObserver`/Command works
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
+	 * Test if the Entity throws an Exception if no CommandInterface was attached
 	 * @covers \WCM\AstroFields\Core\Mediators\Entity::attach()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::isDispatchable()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::notify()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::detach()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getCommands()
-	 * @dataProvider getEntityInputData()
-	 * @param string $key
-	 * @param array  $types
+	 * @expectedException \InvalidArgumentException
 	 */
-	public function testAttachingAndDetachingASplObserverCommand( $key = '', Array $types = array() )
+	public function testAttachNoCommandExceptions()
 	{
-		$info = array( 'proxy' => array( 'foo' => 'bar', ), );
-		/** @var Entity */
-		$entity = new Entity( $key, $types );
-		/** @var ContextAwareInterface $command */
-		$command = $this->getMockCommand();
-
-		$entity->attach( $command, $info );
-
-		$this->assertFalse( $entity->isDispatchable( $command ) );
-
-		$this->assertInstanceOf( 'SplObjectstorage', $entity->getCommands() );
-		$this->assertEquals( count( $entity->getCommands() ), 1 );
-		$this->assertTrue( $entity->getCommands()->contains( $command ) );
-
-		$entity->detach( $command );
-
-		$this->assertEquals( count( $entity->getCommands() ), 0 );
-		$this->assertFalse( $entity->getCommands()->contains( $command ) );
+		/** @var Entity $entity */
+		$entity = new Entity( null, array() );
+		$entity->attach( new \stdClass, array() );
 	}
 
 	/**
-	 * Tests if the `context` array build is done right
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getKey()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getTypes()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getCombinedData()
+	 * Test if the Entity throws an Exception if the wrong data type was attached
+	 * @covers \WCM\AstroFields\Core\Mediators\Entity::attach()
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testAttachWrongDataTypeExceptions()
+	{
+		/** @var CommandInterface $mock */
+		$mock = $this->getMock( '\\WCM\\AstroFields\\Core\\Commands\\CommandInterface' );
+
+		/** @var Entity $entity */
+		$entity = new Entity( null, array() );
+		$entity->attach( $mock, 1 );
+	}
+
+	/**
+	 * Test if attaching a Command (that has a context) to the Entity works
 	 * @dataProvider getEntityInputData()
+	 * @covers       \WCM\AstroFields\Core\Mediators\Entity::attach()
+	 * @covers       \WCM\AstroFields\Core\Mediators\Entity::parseContext()
 	 * @param string $key
 	 * @param array  $types
 	 */
-	public function testGetCombinedDataFromKeyTypesAndCustom( $key = '', Array $types = array() )
+	public function testAttachAndContainsContextAwareCommand( $key = '', Array $types = array() )
 	{
-		/** @var Entity */
-		$entity = new Entity( $key, $types );
-		$result = $entity->getCombinedData( array(
-			'foo' => 'foo',
-			'bar' => 'bar',
-			'baz' => 'baz',
-		) );
+		/** @var CommandInterface | \PHPUnit_Framework_MockObject_MockObject $stub */
+		$stub = $this->getMockBuilder( '\\WCM\\AstroFields\\Core\\Commands\\ContextAwareInterface' )
+			->setMethods( array(
+				'update',
+				'setContext',
+				'getContext',
+			) )
+			->getMock();
 
-		$this->assertNotEmpty( $result );
-		$this->assertInternalType( 'array', $result );
+		$stub->expects( $this->once() )
+			->method( 'getContext' )
+			->will( $this->returnValue( 'save_post_{type}' ) );
+
+		/** @var Entity $entity */
+		$entity = new Entity( $key, $types );
+		$entity->attach( $stub, array( 'foo' => 'bar', ) );
+
+		$this->assertTrue( $entity->contains( $stub ) );
+
+		$this->assertEquals( $entity->offsetGet( $stub ), array(
+			'key'      => $key,
+			'types'    => $types,
+			'foo'      => 'bar',
+			'context'  => array(
+				'save_post_post',
+				'save_post_page',
+			),
+			'notified' => true,
+		) );
+	}
+
+	/**
+	 * Test if attaching a Command to the Entity works
+	 * @dataProvider getEntityInputData()
+	 * @covers       \WCM\AstroFields\Core\Mediators\Entity::attach()
+	 * @param string $key
+	 * @param array  $types
+	 */
+	public function testAttachAndContainsNoContextCommand( $key = '', Array $types = array() )
+	{
+		/** @var CommandInterface | \PHPUnit_Framework_MockObject_MockObject $stub */
+		$stub = $this->getMockBuilder( '\\WCM\\AstroFields\\Core\\Commands\\CommandInterface' )
+			->setMethods( array(
+				'update',
+			) )
+			->getMock();
+
+		/** @var Entity $entity */
+		$entity = new Entity( $key, $types );
+		$entity->attach( $stub, array( 'foo' => 'bar', ) );
+
+		$this->assertTrue( $entity->contains( $stub ) );
+
+		$this->assertEquals( $entity->offsetGet( $stub ), array(
+			'key'      => $key,
+			'types'    => $types,
+			'foo'      => 'bar',
+			'notified' => false,
+		) );
+	}
+
+	/**
+	 * Test if default Command/Entity data gets preserved
+	 * @dataProvider getEntityInputData()
+	 * @covers       \WCM\AstroFields\Core\Mediators\Entity::setupCommandData()
+	 * @param string $key
+	 * @param array  $types
+	 */
+	public function testDefaultCommandDataPreserved( $key = '', Array $types = array() )
+	{
+		$custom = array(
+			'key' => 'foo',
+			'types' => 'bar',
+			'notified' => 'baz',
+		);
+		/** @var Entity $entity */
+		$entity = new Entity( $key, $types );
+
+		$result = $entity->setupCommandData( $custom );
+
+		$this->assertNotEquals( $custom, $result );
 		$this->assertEquals( array(
-			'foo' => 'foo',
-			'bar' => 'bar',
-			'baz' => 'baz',
-			'key' => $entity->getKey(),
-			'types' => $entity->getTypes(),
+			'key'      => $key,
+			'types'    => $types,
+			'notified' => false,
 		), $result );
 	}
 
 	/**
-	 * Test setting the `{proxy}` array via the getter
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::setProxy()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getProxy()
+	 * @covers \WCM\AstroFields\Core\Mediators\Entity::detach()
+	 * @expectedException \InvalidArgumentException
 	 */
-	public function testProxySetterAndGetter()
+	public function testAddAllException()
 	{
-		$entity = new Entity;
-		$entity->setProxy( array( 'foo' => 'bar', ) );
-
-		$this->assertNotEmpty( $entity->getProxy() );
-		$this->assertInternalType( 'array', $entity->getProxy() );
+		$entity = new Entity( 'test', array() );
+		$storage = new \SplObjectStorage;
+		$storage->attach( new \stdClass );
+		$entity->addAll( $storage );
 	}
 
 	/**
-	 * Test setting the `{proxy}` array via the getter
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getProxy()
+	 * Test if merging two entities works and the Entity holds the new Commands
+	 * @dataProvider getEntityInputData()
+	 * @covers       \WCM\AstroFields\Core\Mediators\Entity::addAll()
+	 * @param string $key
+	 * @param array  $types
 	 */
-	public function testProxyGetterAsSetter()
+	public function testAddAllAttachesCommands( $key = '', Array $types = array() )
 	{
-		$entity = new Entity;
-		$info = array( 'proxy' => array( 'foo' => 'bar', ), );
+		$entity = new Entity( $key, $types );
+		$toMerge = new Entity( 'foo', array( 'bar', 'baz', ) );
+		/** @var CommandInterface $cmd */
+		$cmd = $this->getMock( '\\WCM\\AstroFields\\Core\\Commands\\CommandInterface' );
 
-		$entity->getProxy( $info );
-		$this->assertNotEmpty( $entity->getProxy() );
-		$this->assertInternalType( 'array', $entity->getProxy() );
-		$this->assertEquals( $info['proxy'], $entity->getProxy() );
+		// Test if the first entity only has the Command
+		$toMerge->attach( $cmd );
+		$this->assertEquals( 1, $toMerge->count() );
+		$this->assertEquals( 0, $entity->count() );
+
+		// Test if the Command gets added
+		$entity->addAll( $toMerge );
+		$this->assertEquals( 1, $entity->count() );
+
+		// Test if the Command only gets added once
+		$entity->addAll( $toMerge );
+		$this->assertEquals( 1, $entity->count() );
 	}
 
 	/**
-	 * Tests if the attached `ParserInterface` is returning an array
-	 * and if it is doing the parsing correct, returning usable data.
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
+	 * @covers \WCM\AstroFields\Core\Mediators\Entity::detach()
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testDetachException()
+	{
+		$entity = new Entity( 'test', array() );
+		$entity->detach( new \stdClass );
+	}
+
+	/**
+	 * Test if removing Commands works
+	 * @dataProvider getEntityInputData()
+	 * @covers       \WCM\AstroFields\Core\Mediators\Entity::detach()
+	 * @param string $key
+	 * @param array  $types
+	 */
+	public function testDetachSingleCommand( $key = '', Array $types = array() )
+	{
+		$entity = new Entity( $key, $types );
+		/** @var CommandInterface $mock */
+		$mock = $this->getMock( '\\WCM\\AstroFields\\Core\\Commands\\CommandInterface' );
+
+		// Test if attaching works
+		$entity->attach( $mock );
+		$this->assertEquals( 1, $entity->count() );
+		// Test if detaching works
+		$entity->detach( $mock );
+		$this->assertEquals( 0, $entity->count() );
+	}
+
+	/**
+	 * Test if a Command is aware of its context
+	 * Assumes that the command implements `ContextAwareInterface`
+	 * @covers \WCM\AstroFields\Core\Mediators\Entity::isContextAware()
+	 */
+	public function testIfCommandIsContextAware()
+	{
+		/** @var Entity $entity */
+		$entity = new Entity( 'test', array() );
+
+		/** @var CommandInterface | \PHPUnit_Framework_MockObject_MockObject $stub */
+		$stub = $this->getMock( '\\WCM\\AstroFields\\Core\\Commands\\ContextAwareInterface' );
+
+		$this->assertTrue( $entity->isContextAware( $stub ) );
+	}
+
+	/**
+	 * Test if the default Parser works
+	 * @dataProvider getEntityInputData()
 	 * @covers \WCM\AstroFields\Core\Mediators\Entity::parseContext()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getCombinedData()
 	 * @param string $key
 	 * @param array  $types
 	 */
-	public function testContextParser( $key = '', Array $types = array() )
+	public function testParseContext( $key = '', Array $types = array() )
 	{
-		$info = array( 'proxy' => array( 'foo' => 'bar', ), );
+		/** @var ContextAwareInterface | \PHPUnit_Framework_MockObject_MockObject $stub */
+		$stub = $this->getMockBuilder( '\\WCM\\AstroFields\\Core\\Commands\\ContextAwareInterface' )
+			->setMethods( array(
+				'update',
+				'setContext',
+				'getContext',
+			) )
+			->getMock();
+
+		$stub->expects( $this->once() )
+			->method( 'getContext' )
+			->will( $this->returnValue( 'sanitize_{type}_meta_{key}' ) );
+
 		/** @var Entity $entity */
 		$entity = new Entity( $key, $types );
-		/** @var ContextAwareInterface $command */
-		$command = $this->getMockCommandWithContext();
-
 		$results = $entity->parseContext(
-			$command->getContext(),
-			$entity->getCombinedData( $info )
+			$stub,
+			$entity->setupCommandData( array( 'foo' => 'baz', )
+		) );
+		$result = $results['context'];
+
+		$this->assertInternalType( 'array', $result );
+
+		foreach ( $result as $r )
+			$this->assertRegExp( '/^([_a-z\{\}]*+)$/i', $r );
+
+		$expected = array(
+			'sanitize_post_meta_test',
+			'sanitize_page_meta_test',
 		);
-
-		$this->assertInternalType( 'array', $results );
-
-		foreach ( $results as $result )
-			$this->assertRegExp( '/^([_a-z\{\}]*+)$/i', $result );
+		$this->assertEquals( $expected, $result );
 	}
 
 	/**
-	 * Tests if the `context` array build is done right
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::__construct()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getContextContainer()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getKey()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getTypes()
-	 * @covers \WCM\AstroFields\Core\Mediators\Entity::getProxy()
+	 * Test if callbacks get attached to the filters/actions
+	 * @dataProvider getEntityInputData()
+	 * @covers       \WCM\AstroFields\Core\Mediators\Entity::notify()
+	 * @covers       \WCM\AstroFields\Core\Mediators\Entity::addInfo()
 	 * @param string $key
 	 * @param array  $types
 	 */
-	public function testGetResultingContextContainer( $key = '', Array $types = array() )
+	public function testNotifyAddsCallbackToFilter( $key = '', Array $types = array() )
 	{
-		$info = array( 'proxy' => array( 'foo' => 'bar', ), );
 		/** @var Entity $entity */
 		$entity = new Entity( $key, $types );
-		$entity->getProxy( $info );
 
-		$result = $entity->getContextContainer();
+		/** @var ContextAwareInterface | \PHPUnit_Framework_MockObject_MockObject $stub */
+		$stub = $this->getMockBuilder( '\\WCM\\AstroFields\\Core\\Commands\\ContextAwareInterface' )
+			->setMethods( array(
+				'update',
+				'setContext',
+				'getContext',
+			) )
+			->getMock();
 
-		$this->assertNotEmpty( $result );
-		$this->assertInternalType( 'array', $result );
-		$this->assertArrayHasKey( '{key}', $result );
-		$this->assertArrayHasKey( '{type}', $result );
-		$this->assertArrayHasKey( '{proxy}', $result );
+		$stub->expects( $this->once() )
+			->method( 'getContext' )
+			->will( $this->returnValue( 'sanitize_{type}_meta_{key}' ) );
+
+		$entity->attach( $stub );
+		// Make sure the Entity actually contains the command
+		$this->assertTrue( $entity->contains( $stub ) );
 	}
 
-# ===== Helper
+# ===== Mocks & Sample Data
 
 	public function getEntityInputData()
 	{
@@ -315,42 +320,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 		);
 	}
 
-	public function getMockCommand()
+	public function getCommandMock()
 	{
-		$mock = $this->getMockBuilder( '\SplObserver' )
-			->setMethods( array(
-				'update',
-				'getContext',
-			) )
+		$mock = $this->getMockBuilder( '\SampleCommand' )
+			->setMethods( array() )
 			->getMock();
-
-		return $mock;
-	}
-
-	public function getMockCommandWithContext( \PHPUnit_Framework_MockObject_MockObject $mock = null )
-	{
-		is_null( $mock ) AND $mock = $this->getMockCommand();
-
-		$mock
-			->expects( $this->once() )
-			->method( 'getContext' )
-			->will( $this->returnValue( 'save_post_{type}' ) );
-
-		return $mock;
-	}
-
-	public function getDispatchableMock()
-	{
-		$mock = $this->getMockBuilder( 'ContextAwareInterface' )
-			->setMethods( array(
-				'getContext',
-			) )
-			->getMock();
-
-		$mock
-			->expects( $this->once() )
-			->method( 'getContext' )
-			->will( $this->returnValue( 'save_post_{type}' ) );
 
 		return $mock;
 	}

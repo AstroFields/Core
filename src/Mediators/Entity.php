@@ -2,11 +2,15 @@
 
 namespace WCM\AstroFields\Core\Mediators;
 
+use WCM\AstroFields\Core\Commands\CommandInterface;
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
-use WCM\AstroFields\Core\Helpers\ContextParser;
-use WCM\AstroFields\Core\Models\EntityStorage;
+use WCM\AstroFields\Core\Helpers\ParserInterface;
 
-class Entity implements \SplSubject
+/**
+ * Class Entity
+ * @package WCM\AstroFields\Core\Mediators
+ */
+class Entity extends \SplObjectStorage implements EntityInterface
 {
 	/** @type string */
 	private $key;
@@ -17,312 +21,263 @@ class Entity implements \SplSubject
 	/** @type Array */
 	private $proxy = array();
 
-	/** @type \SplObjectstorage */
-	private $commands;
+	/** @var ParserInterface | string */
+	private $parser = '\\WCM\\AstroFields\\Core\\Helpers\\ContextParser';
 
-	/**
-	 * @param string $key
-	 * @param array  $types
-	 */
-	public function __construct( $key = '', Array $types = array() )
+	public function __construct(
+		$key = null,
+		Array $types = array(),
+		ParserInterface $parser = null
+		)
 	{
 		$this->key   = $key;
 		$this->types = $types;
 
-		$this->commands = new EntityStorage;
-		#$this->commands = new \SplObjectstorage;
+		$this->parser = (
+			is_null( $parser )
+			AND is_string( $this->parser )
+		)
+			? new $this->parser
+			: new $parser;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getKey()
 	{
 		return $this->key;
 	}
 
 	/**
-	 * Set a name for the Entity
-	 * @param string $key
-	 * @throws \LogicException
+	 * Attach {proxy} placeholders, which are usable in the `context`
+	 * Similar to {key} and {type}
+	 * @param Array | mixed $proxy
+	 * @return mixed|void
 	 */
-	public function setKey( $key )
+	public function setProxy( $proxy )
 	{
-		if ( ! empty( $this->key ) )
-			throw new \LogicException( 'An entity can only be named once' );
+		! is_array( $proxy ) and $proxy = array( $proxy );
 
-		$this->key = $key;
+		$this->proxy[] = $proxy;
 	}
 
 	/**
-	 * Attach types to this entity
-	 * @TODO Freeze at one point
-	 * @param  array $types
-	 * @throws \LogicException
+	 * Attach a Command to an Entity
+	 * This method also notifies the attached Command and
+	 * attaches it to its `context` (filters/actions)
+	 * Parses the Context with the Parser specific to this Entity.
+	 * @param CommandInterface $command
+	 * @param array            $data
+	 * @return $this|void
 	 */
-	public function setTypes( Array $types )
+	public function attach( $command, $data = array() )
 	{
-		if ( ! empty( $this->types ) )
-			throw new \LogicException( 'To add additional types, use `addType()`' );
+		if ( ! $command instanceof CommandInterface )
+			throw new \InvalidArgumentException( 'Commands must implement the CommandInterface' );
 
-		$this->types = $types;
-	}
+		if (
+			! is_null( $data )
+			and ! is_array( $data )
+		)
+			throw new \InvalidArgumentException( 'Command data must be an Array' );
 
-	/**
-	 * Attach an additional type
-	 * @TODO Freeze at one point
-	 * @param $type
-	 */
-	public function addType( $type )
-	{
-		$this->types[] = $type;
-	}
+		$data = $this->setupCommandData( $data );
 
-	/**
-	 * @return Array
-	 */
-	public function getTypes()
-	{
-		return $this->types;
-	}
-
-	/**
-	 * Attach an SplObserver
-	 * Note: If the context is empty, but ContextAwareInterface implemented,
-	 * the context was deliberately emptied to allow manual triggering from
-	 * i.e. a Meta Box, an users profile, a custom form, etc.
-	 * @codeCoverageIgnore
-	 * @param \SplObserver | ContextAwareInterface $command
-	 * @param array                                $info
-	 * @return $this
-	 */
-	public function attach( \SplObserver $command, Array $info = array() )
-	{
-		$data = $this->getCombinedData( $info );
-
-		#$this->commands->attach( $command, $data );
-		#var_dump( ' >> Info', $this->commands->getInfo() );
-		#var_dump( ' >> Context', $this->commands->getContext() );
-		#foreach ( $this->commands as $command )
-		#	var_dump( $this->commands->current() );
-
-		if ( $this->isDispatchable( $command ) )
+		// Parse and attach context, notify Command and mark as notified
+		if ( $this->isContextAware( $command ) )
 		{
-			// Do not try to parse an already parsed context
-			// This is the case if the same command gets attached multiple times
-			if ( ! is_array( $command->getContext() ) )
-			{
-				// Build the context by replacing {placeholders} with real data
-				$command->setContext( $this->parseContext(
-					$command->getContext(),
-					$data
-				) );
-			}
+			/** @var ContextAwareInterface $command */
+			$data = array_merge(
+				$data,
+				$this->parseContext( $command, $data )
+			);
 
-			$this->dispatch( $command, $data );
-
-			return $this;
+			$this->notify( $command, $data );
+			$data['notified'] = true;
 		}
 
-		$this->commands->attach( $command, $data );
+		parent::attach( $command, $data );
 
 		return $this;
 	}
 
 	/**
-	 * Add custom data and append the key and types
-	 * This effectively overwrites manually set `key` and `types`
-	 * preventing errors from accidental abuse of those reserved keys.
-	 * @throws \UnexpectedValueException If reserved keys are used in the data array
-	 * @param array $info Optional
+	 * Merge Command data with defaults and preserves defaults silently
+	 * @param array $data
 	 * @return array
 	 */
-	public function getCombinedData( Array $info = array() )
+	public function setupCommandData( Array $data )
 	{
-		if (
-			isset( $info['key'] )
-			OR isset( $info['types'] )
-		)
-			throw new \UnexpectedValueException( sprintf(
-				'%s: `key` and `types` are reserved keys',
-				get_class( $this )
-			) );
-
-		return $info + array(
-			'key'   => $this->getKey(),
-			'types' => $this->getTypes(),
-		);
+		return array(
+			'key'      => $this->key,
+			'types'    => $this->types,
+			'notified' => false,
+		) + $data;
 	}
 
 	/**
-	 * Can the command get dispatched?
-	 * Dispatching means attaching it to a hook or filter.
-	 * This is only possible if the Command implements
-	 * the ContextAwareInterface methods and getContext()
-	 * actually returns something. A commands context can
-	 * get emptied before it gets attached to remove it
-	 * from the stack of delayed/hooked command storage.
-	 * @param \SplObserver $command
-	 * @return bool
+	 * Attach/Inject a Command bundle
+	 * This method allows merging the Commands of one Entity
+	 * into the current Entity. Already attached Commands do not get
+	 * overwritten/are skipped. The Callbacks of the old Entity' Commands
+	 * get removed from their respective filters and actions as keys and
+	 * types are attached to the Entity and not the Command.
+	 * @param \SplObjectStorage $commands
 	 */
-	public function isDispatchable( \SplObserver $command )
+	public function addAll( $commands )
 	{
-		return
-			$command instanceof ContextAwareInterface
-			AND '' !== $command->getContext();
+		/** @var \SplObjectStorage $commands */
+		foreach ( $commands as $cmd )
+		{
+			if ( ! $commands->current() instanceof CommandInterface )
+				throw new \InvalidArgumentException( 'Commands must implement the CommandInterface' );
+
+			/** @var CommandInterface $command */
+			$command = $commands->current();
+			if ( ! $this->contains( $command ) )
+			{
+
+				// Detach Command from old filters/actions
+				if ( $this->isContextAware( $command ) )
+				{
+					$data = $commands->getInfo();
+					foreach ( $data['context'] as $callback => $context )
+						remove_filter( $context, $callback, 10  );
+				}
+
+				// Attach Commands to new filters
+				$this->attach(
+					$command,
+					$commands->getInfo()
+				);
+			}
+		}
 	}
 
 	/**
-	 * Attach {proxy} placeholders, usable in the `context`
-	 * similar to {key} and {type}
-	 * @param array $proxy
-	 * @return $this
+	 * Detach a Command
+	 * Also removes its callbacks on filters or actions.
+	 * @param CommandInterface $command
+	 * @return $this|void
 	 */
-	public function setProxy( Array $proxy )
+	public function detach( $command )
 	{
-		$this->proxy = $proxy;
+		if ( ! $command instanceof CommandInterface )
+			throw new \InvalidArgumentException( 'Commands must implement the CommandInterface' );
+
+		// Remove callbacks from filter/action
+		if ( $this->isContextAware( $command ) )
+		{
+			$data = $this->offsetGet( $command );
+			foreach ( $data['context'] as $callback => $context )
+				remove_filter( $context, $callback, 10  );
+		}
+
+		parent::detach( $command );
 
 		return $this;
 	}
 
 	/**
-	 * Retrieve the {proxy} values
-	 * Allow passing the {proxy} as part of the data/info Array
-	 * to set it during initial setup of the Entity.
-	 * Does not allow overwriting the {proxy} when it already is set.
-	 * If there is demand to set the {proxy} on the fly,
-	 * use the `setProxy()` method.
-	 * @param array $info Optional
-	 * @return Array
+	 * Test if a class is aware of its `context`
+	 * @param CommandInterface $command
+	 * @return bool
 	 */
-	public function getProxy( Array $info = array() )
+	public function isContextAware( CommandInterface $command )
 	{
-		// Use the Setter
-		if (
-			empty( $this->proxy )
-			AND isset( $info['proxy'] )
-		)
-			$this->setProxy( $info['proxy'] );
-
-		return $this->proxy;
+		return $command instanceof ContextAwareInterface;
 	}
 
 	/**
 	 * Build the context (hooks/filters) array
 	 * When a context is provided when attaching a Command,
-	 * you can use `{key}`, `{type}` and `{proxy}` as placeholder.
-	 * @param  string $context Retrieved from a Command
-	 * @param  array  $info key/value storage of placeholders
-	 * @return array The parsed/possible contexts
-	 */
-	public function parseContext( $context, Array $info = array() )
-	{
-		// Allow passing the {proxy} as part of the data/info Array
-		// Utitlizes the Getter to use type hinting in case it's no Array.
-		$this->getProxy( $info );
-
-		// @TODO Allow exchanging the parser
-		$parser = new ContextParser;
-
-		$parser->setup(
-			$this->getContextContainer(),
-			$context
-		);
-
-		return $parser->getResult();
-	}
-
-	/**
-	 * Retrieve the container of all context, ready to get parsed
-	 * into filter or action names used to attach callbacks.
+	 * you can use `{key}`, `{type}` and `{proxy}` as placeholders
+	 * to be used in the Parser.
+	 * @param ContextAwareInterface $command
+	 * @param array            $data
 	 * @return array
 	 */
-	public function getContextContainer()
+	public function parseContext( ContextAwareInterface $command, Array $data = array() )
 	{
-		return array(
-			'{key}'   => array( $this->getKey() ),
-			'{type}'  => $this->getTypes(),
-			'{proxy}' => $this->getProxy(),
+		$placeholder = array(
+			'{key}'   => array( $this->key ),
+			'{type}'  => $this->types,
+			'{proxy}' => $this->proxy,
 		);
+		$this->parser->setup(
+			$placeholder,
+			$command->getContext()
+		);
+
+		return array_merge( $data, array(
+			'context' => $this->parser->getResult(),
+		) );
 	}
 
 	/**
-	 * Detach an Observer/a Command from the stack
-	 * @param \SplObserver $command
-	 * @return $this
-	 */
-	public function detach( \SplObserver $command )
-	{
-		$this->commands->detach( $command );
-
-		return $this;
-	}
-
-	/**
-	 * Retrieve all attached Commands.
-	 * Command storage is returned as clone to avoid altering the original.
-	 * @return \SplObjectstorage
-	 */
-	public function getCommands()
-	{
-		$commands = clone $this->commands;
-		$commands->rewind();
-
-		return $commands;
-	}
-
-	/**
-	 * Notify all attached Commands to execute
+	 * Delay the execution of a Command until the appearance of an action or filter
+	 * Important: The Entity is attached as clone to avoid altering the original
+	 * from inside a Command as this might affect other Commands.
 	 * $subject = $this Alias:
-	 * PHP 5.3 fix, as Closures don't know where to point $this prior to 5.4
-	 * props Malte "s1lv3r" Witt
-	 * @codeCoverageIgnore
-	 */
-	public function notify()
-	{
-		$subject = $this;
-
-		$this->commands->rewind();
-		foreach ( $this->commands as $command )
-		{
-			$this->commands->current()->update(
-				$subject,
-				$this->commands->getInfo()
-			);
-		}
-	}
-
-	/**
-	 * Delay the execution of a Command until the appearance of a hook or filter
-	 * $subject = $this Alias:
-	 * PHP 5.3 fix, as Closures don't know where to point $this prior to 5.4
+	 * PHP 5.3 fix, as Closures don't know where to point `$this` prior to 5.4
 	 * props Malte "s1lv3r" Witt
 	 * @link https://wiki.php.net/rfc/closures/object-extension
 	 * @codeCoverageIgnore
-	 * @param \SplObserver | ContextAwareInterface $command
-	 * @param array                                $data
+	 * @param ContextAwareInterface $command
+	 * @param array             $data
 	 */
-	public function dispatch( ContextAwareInterface $command, Array $data )
+	public function notify( ContextAwareInterface $command, Array $data = array() )
 	{
-		$contexts = $command->getContext();
-		$subject  = $this;
+		/** @var Entity | \SplObjectStorage $subject */
+		$subject = clone $this;
 
-		foreach ( $contexts as $context )
+		$callbacks = array();
+		foreach ( $data['context'] as $index => $context )
 		{
-			# @codeCoverageIgnore
-			add_filter( $context, function() use ( $subject, $command, $data, $context )
+			/** @codeCoverageIgnore */
+			$callback = function() use ( $command, $subject, $data )
 			{
-				// Provide all filter arguments to the Command as `args` Array
-				$data['args'] = func_get_args();
+				$args = func_get_args();
+				array_push( $args, $subject, $data );
 
-				return $command->update(
-					$subject,
-					$data
+				$subject->addInfo( array( 'frozen' => true, ), $command );
+
+				/** @noinspection PhpVoidFunctionResultUsedInspection */
+				return call_user_func_array(
+					array( $command, 'update' ),
+					$args
 				);
-				# Less readable version:
-				# return call_user_func_array( array( $command, 'update' ), func_get_args() );
+			};
 
-			}, 10, PHP_INT_MAX -1 );
+			// Set the hash of the {closure} as new index for the context
+			$callbacks[] = _wp_filter_build_unique_id( $context, $callback, 10 );
+
+			add_filter( $context, $callback, 10, PHP_INT_MAX -1 );
 		}
+
+		// Attach callback hashes to context array
+		$data['context'] = array_combine( $callbacks, $data['context'] );
+
+		$this->addInfo( $data, $command );
+	}
+
+	/**
+	 * Add info to the info array of a Command
+	 * @param array            $data
+	 * @param ContextAwareInterface $command
+	 */
+	public function addInfo( Array $data, ContextAwareInterface $command = null )
+	{
+		if ( ! is_null( $command ) )
+		{
+			$this->rewind();
+			while ( $this->valid() )
+			{
+				if ( $this->current() === $command )
+					break;
+				$this->next();
+			}
+		}
+
+		$info = $this->getInfo() ?: array();
+		parent::setInfo( array_merge( $info, $data ) );
 	}
 }

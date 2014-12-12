@@ -2,26 +2,27 @@
 
 namespace WCM\AstroFields\Core\Commands;
 
-use WCM\AstroFields\Core\Receivers;
+use WCM\AstroFields\Core\Providers;
 use WCM\AstroFields\Core\Templates;
 
 class ViewCmd implements
-	\SplObserver,
+	CommandInterface,
 	ViewAwareInterface,
 	ContextAwareInterface
 {
 	/** @var string */
 	protected $context = '';
 
-	/** @type Receivers\EntityProviderInterface */
-	private $receiver;
+	/** @type Providers\EntityProviderInterface */
+	private $provider;
 
 	/** @type Templates\TemplateInterface | Templates\PrintableInterface */
 	private $template;
 
 	public function __construct(
-		Receivers\DataReceiverInterface $receiver,
-		Templates\TemplateInterface $template )
+		Providers\DataProviderInterface $receiver,
+		Templates\TemplateInterface $template
+		)
 	{
 		$this->receiver = $receiver;
 		$this->template = $template;
@@ -29,10 +30,11 @@ class ViewCmd implements
 
 	/**
 	 * Receive update from subject
-	 * @param \SplSubject $subject
-	 * @param Array       $data
+	 * @param CommandInterface $subject
+	 * @param Array            $data
+	 * @return mixed | void
 	 */
-	public function update( \SplSubject $subject, Array $data = null )
+	public function update( CommandInterface $subject = null, Array $data = array() )
 	{
 		$this->receiver->setData( $data );
 		$this->template->attach( $this->receiver );
@@ -40,9 +42,9 @@ class ViewCmd implements
 		echo $this->template->display();
 	}
 
-	public function setProvider( Receivers\DataReceiverInterface $receiver )
+	public function setProvider( Providers\DataProviderInterface $provider = null )
 	{
-		$this->receiver = $receiver;
+		$this->provider = $provider;
 
 		return $this;
 	}

@@ -28,11 +28,19 @@
     },
     "require-dev" : {
         "phpunit/phpunit"               : "4.3.*",
+        "brain/hooks-mock"              : "*",
         "codeclimate/php-test-reporter" : "dev-master"
     },
+    "repositories": [
+        {
+            "type" : "vcs",
+            "url"  : "https://github.com/franz-josef-kaiser/HooksMock.git"
+        }
+    ],
     "autoload"    : {
         "psr-4" : {
-            "WCM\\AstroFields\\Core\\" : "src/"
+            "WCM\\AstroFields\\Core\\" : "src/",
+            "Astro\\"                  : "src/Facades/"
         }
     },
     "config": {

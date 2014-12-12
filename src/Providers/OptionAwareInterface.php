@@ -1,6 +1,6 @@
 <?php
 
-namespace WCM\AstroFields\Core\Receivers;
+namespace WCM\AstroFields\Core\Providers;
 
 /**
  * Interface OptionAwareInterface
@@ -8,7 +8,7 @@ namespace WCM\AstroFields\Core\Receivers;
  * Common examples are Radio Buttons, Select form fields
  * Checkbox sets or lists.
  * Use this as indicator/recipe for key/value a storage.
- * @package WCM\AstroFields\Core\Receivers
+ * @package WCM\AstroFields\Core\Providers
  */
 interface OptionAwareInterface extends EntityProviderInterface
 {
