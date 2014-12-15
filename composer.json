@@ -18,7 +18,6 @@
         "forum"  : "http://stackoverflow.com/questions/tagged/astrofields",
         "source" : "https://github.com/AstroFields/Core/releases",
         "wiki"   : "http://astrofields.com/docs",
-        "irc"    : "https://astrofields.slack.com/messages/astrofields",
         "email"  : "hi.astronauts@gmail.com"
     },
     "minimum-stability" : "dev",
