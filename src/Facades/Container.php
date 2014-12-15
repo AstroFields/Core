@@ -8,7 +8,7 @@ class Container extends \SplObjectStorage implements \SeekableIterator
 
 	public static function instance()
 	{
-		is_null( self::$instance ) and new self;
+		is_null( self::$instance ) and self::$instance = new self;
 		return self::$instance;
 	}
 
