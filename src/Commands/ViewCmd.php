@@ -20,12 +20,12 @@ class ViewCmd implements
 	private $template;
 
 	public function __construct(
-		Providers\DataProviderInterface $receiver,
-		Templates\TemplateInterface $template
+		Providers\DataProviderInterface $receiver = null,
+		Templates\TemplateInterface $template = null
 		)
 	{
-		$this->receiver = $receiver;
-		$this->template = $template;
+		$receiver and $this->receiver = $receiver;
+		$template and $this->template = $template;
 	}
 
 	/**
@@ -42,7 +42,7 @@ class ViewCmd implements
 		echo $this->template->display();
 	}
 
-	public function setProvider( Providers\DataProviderInterface $provider = null )
+	public function setProvider( Providers\DataProviderInterface $provider )
 	{
 		$this->provider = $provider;
 

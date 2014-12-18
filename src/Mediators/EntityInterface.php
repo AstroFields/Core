@@ -4,7 +4,7 @@ namespace WCM\AstroFields\Core\Mediators;
 
 use WCM\AstroFields\Core\Commands\ContextAwareInterface;
 
-interface EntityInterface
+interface EntityInterface extends \Traversable, \ArrayAccess
 {
 	/**
 	 * @param $proxy

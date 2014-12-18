@@ -59,11 +59,17 @@ class Entity extends \SplObjectStorage implements EntityInterface
 		$this->proxy[] = $proxy;
 	}
 
+	public function __toString()
+	{
+		return sprintf( '%s@%s', __CLASS__, spl_object_hash( $this ) );
+	}
+
 	/**
 	 * Attach a Command to an Entity
 	 * This method also notifies the attached Command and
 	 * attaches it to its `context` (filters/actions)
 	 * Parses the Context with the Parser specific to this Entity.
+	 * @throws \InvalidArgumentException
 	 * @param CommandInterface $command
 	 * @param array            $data
 	 * @return $this|void
@@ -120,21 +126,24 @@ class Entity extends \SplObjectStorage implements EntityInterface
 	 * overwritten/are skipped. The Callbacks of the old Entity' Commands
 	 * get removed from their respective filters and actions as keys and
 	 * types are attached to the Entity and not the Command.
+	 * @throws \InvalidArgumentException
 	 * @param \SplObjectStorage $commands
 	 */
 	public function addAll( $commands )
 	{
+		if ( ! $commands instanceof \SplObjectStorage )
+			throw new \InvalidArgumentException( 'Commands must implement SplObjectStorage' );
+
 		/** @var \SplObjectStorage $commands */
 		foreach ( $commands as $cmd )
 		{
 			if ( ! $commands->current() instanceof CommandInterface )
-				throw new \InvalidArgumentException( 'Commands must implement the CommandInterface' );
+				throw new \InvalidArgumentException( 'Command must implement the CommandInterface' );
 
 			/** @var CommandInterface $command */
 			$command = $commands->current();
 			if ( ! $this->contains( $command ) )
 			{
-
 				// Detach Command from old filters/actions
 				if ( $this->isContextAware( $command ) )
 				{
@@ -155,6 +164,7 @@ class Entity extends \SplObjectStorage implements EntityInterface
 	/**
 	 * Detach a Command
 	 * Also removes its callbacks on filters or actions.
+	 * @throws \InvalidArgumentException
 	 * @param CommandInterface $command
 	 * @return $this|void
 	 */
@@ -216,6 +226,7 @@ class Entity extends \SplObjectStorage implements EntityInterface
 	 * Delay the execution of a Command until the appearance of an action or filter
 	 * Important: The Entity is attached as clone to avoid altering the original
 	 * from inside a Command as this might affect other Commands.
+	 * It also allows the method to be called multiple times.
 	 * $subject = $this Alias:
 	 * PHP 5.3 fix, as Closures don't know where to point `$this` prior to 5.4
 	 * props Malte "s1lv3r" Witt
