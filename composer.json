@@ -26,7 +26,7 @@
         "composer/installers" : "~1.0"
     },
     "require-dev" : {
-        "phpunit/phpunit"               : "4.3.*",
+        "phpunit/phpunit"               : "4.4.*",
         "brain/hooks-mock"              : "*",
         "codeclimate/php-test-reporter" : "dev-master"
     },
