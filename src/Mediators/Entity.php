@@ -87,20 +87,22 @@ class Entity extends \SplObjectStorage implements EntityInterface
 
 		$data = $this->setupCommandData( $data );
 
+		parent::attach( $command, $data );
+
 		// Parse and attach context, notify Command and mark as notified
-		if ( $this->isContextAware( $command ) )
+		if (
+			$this->isContextAware( $command )
+			and ! $data['notified']
+			and is_object( $this->parser )
+			)
 		{
 			/** @var ContextAwareInterface $command */
 			$data = array_merge(
 				$data,
 				$this->parseContext( $command, $data )
 			);
-
 			$this->notify( $command, $data );
-			$data['notified'] = true;
 		}
-
-		parent::attach( $command, $data );
 
 		return $this;
 	}
@@ -145,12 +147,7 @@ class Entity extends \SplObjectStorage implements EntityInterface
 			if ( ! $this->contains( $command ) )
 			{
 				// Detach Command from old filters/actions
-				if ( $this->isContextAware( $command ) )
-				{
-					$data = $commands->getInfo();
-					foreach ( $data['context'] as $callback => $context )
-						remove_filter( $context, $callback, 10  );
-				}
+				$commands->detach( $command );
 
 				// Attach Commands to new filters
 				$this->attach(
@@ -177,6 +174,7 @@ class Entity extends \SplObjectStorage implements EntityInterface
 		if ( $this->isContextAware( $command ) )
 		{
 			$data = $this->offsetGet( $command );
+
 			foreach ( $data['context'] as $callback => $context )
 				remove_filter( $context, $callback, 10  );
 		}
@@ -193,7 +191,8 @@ class Entity extends \SplObjectStorage implements EntityInterface
 	 */
 	public function isContextAware( CommandInterface $command )
 	{
-		return $command instanceof ContextAwareInterface;
+		return $command instanceof ContextAwareInterface
+			and $this->getKey();
 	}
 
 	/**
@@ -229,7 +228,6 @@ class Entity extends \SplObjectStorage implements EntityInterface
 	 * It also allows the method to be called multiple times.
 	 * $subject = $this Alias:
 	 * PHP 5.3 fix, as Closures don't know where to point `$this` prior to 5.4
-	 * props Malte "s1lv3r" Witt
 	 * @link https://wiki.php.net/rfc/closures/object-extension
 	 * @codeCoverageIgnore
 	 * @param ContextAwareInterface $command
@@ -241,13 +239,13 @@ class Entity extends \SplObjectStorage implements EntityInterface
 		$subject = clone $this;
 
 		$callbacks = array();
-		foreach ( $data['context'] as $index => $context )
+		foreach ( $data['context'] as $context )
 		{
 			/** @codeCoverageIgnore */
 			$callback = function() use ( $command, $subject, $data )
 			{
 				$args = func_get_args();
-				array_push( $args, $subject, $data );
+				array_unshift( $args, $subject, $data );
 
 				$subject->addInfo( array( 'frozen' => true, ), $command );
 
@@ -264,8 +262,9 @@ class Entity extends \SplObjectStorage implements EntityInterface
 			add_filter( $context, $callback, 10, PHP_INT_MAX -1 );
 		}
 
-		// Attach callback hashes to context array
+		// Attach callback hashes to context array and set as notified
 		$data['context'] = array_combine( $callbacks, $data['context'] );
+		$data['notified'] = true;
 
 		$this->addInfo( $data, $command );
 	}
@@ -288,7 +287,7 @@ class Entity extends \SplObjectStorage implements EntityInterface
 			}
 		}
 
-		$info = $this->getInfo() ?: array();
+		$info = parent::getInfo() ?: array();
 		parent::setInfo( array_merge( $info, $data ) );
 	}
 }

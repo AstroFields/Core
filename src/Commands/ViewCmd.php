@@ -2,6 +2,7 @@
 
 namespace WCM\AstroFields\Core\Commands;
 
+use WCM\AstroFields\Core\Mediators\EntityInterface;
 use WCM\AstroFields\Core\Providers;
 use WCM\AstroFields\Core\Templates;
 
@@ -30,11 +31,11 @@ class ViewCmd implements
 
 	/**
 	 * Receive update from subject
-	 * @param CommandInterface $subject
-	 * @param Array            $data
+	 * @param EntityInterface $entity
+	 * @param Array           $data
 	 * @return mixed | void
 	 */
-	public function update( CommandInterface $subject = null, Array $data = array() )
+	public function update( EntityInterface $entity = null, Array $data = array() )
 	{
 		$this->receiver->setData( $data );
 		$this->template->attach( $this->receiver );

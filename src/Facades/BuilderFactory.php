@@ -41,7 +41,7 @@ class BuilderFactory extends \SplObjectStorage implements \SeekableIterator
 	}
 
 	/**
-	 * @param \SplObjectStorage | EntityInterface $entity
+	 * @param \SplObjectStorage $entity
 	 * @return array
 	 */
 	public function getErrors( \SplObjectStorage $entity )

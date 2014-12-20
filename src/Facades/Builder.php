@@ -51,7 +51,7 @@ class Builder
 		$container = BuilderFactory::instance();
 
 		try {
-			/** @var \SplObjectStorage | EntityInterface $entity */
+			/** @var \SplObjectStorage $entity */
 			$entity = $this->entity;
 			$entity->attach( $command );
 		}
@@ -67,11 +67,23 @@ class Builder
 		return $this;
 	}
 
+	/**
+	 * @param BundleProviderInterface $bundle
+	 * @return $this
+	 */
 	public function addBundle( BundleProviderInterface $bundle )
 	{
-		$entity = $bundle->register( new Entity );
+		$entity = new Entity( get_class( $bundle ) );
+		// Passes the Entity by reference
+		call_user_func_array(
+			array( $bundle, 'register' ),
+			array( &$entity ) + func_get_args()
+		);
+
 		/** @noinspection PhpUndefinedMethodInspection */
 		$this->entity->addAll( $entity );
+
+		return $this;
 	}
 
 	/**
