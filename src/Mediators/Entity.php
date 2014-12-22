@@ -59,6 +59,11 @@ class Entity extends \SplObjectStorage implements EntityInterface
 		$this->proxy[] = $proxy;
 	}
 
+	/**
+	 * A quick dev helper that allows echo-ing the current Entity "ID"
+	 * @codeCoverageIgnore
+	 * @return string
+	 */
 	public function __toString()
 	{
 		return sprintf( '%s@%s', __CLASS__, spl_object_hash( $this ) );
@@ -137,6 +142,8 @@ class Entity extends \SplObjectStorage implements EntityInterface
 			throw new \InvalidArgumentException( 'Commands must implement SplObjectStorage' );
 
 		/** @var \SplObjectStorage $commands */
+		$commands->rewind();
+
 		foreach ( $commands as $cmd )
 		{
 			if ( ! $commands->current() instanceof CommandInterface )
@@ -146,14 +153,13 @@ class Entity extends \SplObjectStorage implements EntityInterface
 			$command = $commands->current();
 			if ( ! $this->contains( $command ) )
 			{
-				// Detach Command from old filters/actions
-				$commands->detach( $command );
-
 				// Attach Commands to new filters
 				$this->attach(
 					$command,
 					$commands->getInfo()
 				);
+				// Detach Command from old filters/actions
+				$commands->detach( $command );
 			}
 		}
 	}

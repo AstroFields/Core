@@ -1,6 +1,6 @@
 <?php
 
-namespace WCM\AstroFields;
+namespace Astro;
 
 function get_entity()
 {

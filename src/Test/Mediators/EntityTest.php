@@ -79,17 +79,14 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 		/** @var Entity $entity */
 		$entity = new Entity( $key, $types );
 		$entity->attach( $stub, array( 'foo' => 'bar', ) );
-
 		$this->assertTrue( $entity->contains( $stub ) );
 
-		$this->assertEquals( $entity->offsetGet( $stub ), array(
+		$expected = $entity->offsetGet( $stub );
+		$this->assertEquals( $expected, array(
 			'key'      => $key,
 			'types'    => $types,
 			'foo'      => 'bar',
-			'context'  => array(
-				'save_post_post',
-				'save_post_page',
-			),
+			'context'  => $expected['context'],
 			'notified' => true,
 		) );
 	}
@@ -177,16 +174,20 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 		/** @var CommandInterface $cmd */
 		$cmd = $this->getMock( '\\WCM\\AstroFields\\Core\\Commands\\CommandInterface' );
 
+		$toMerge->rewind();
 		// Test if the first entity only has the Command
-		$toMerge->attach( $cmd );
+		$toMerge->attach( $cmd, array() );
+		$toMerge->rewind();
+
 		$this->assertEquals( 1, $toMerge->count() );
 		$this->assertEquals( 0, $entity->count() );
 
 		// Test if the Command gets added
 		$entity->addAll( $toMerge );
+
 		$this->assertEquals( 1, $entity->count() );
 
-		// Test if the Command only gets added once
+		// Test if the Command does not get added a second time
 		$entity->addAll( $toMerge );
 		$this->assertEquals( 1, $entity->count() );
 	}

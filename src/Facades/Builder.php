@@ -3,7 +3,6 @@
 namespace Astro;
 
 use WCM\AstroFields\Core\Mediators\Entity;
-use WCM\AstroFields\Core\Mediators\EntityInterface;
 use WCM\AstroFields\Core\Commands\CommandInterface;
 
 class Builder
